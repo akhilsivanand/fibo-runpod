@@ -62,6 +62,8 @@ def public_files(root, include_validation=False):
             allowed = path.suffix in DIRECTORIES[parts[0]]
         if len(parts) == 3 and parts[:2] == (".github", "workflows"):
             allowed = path.suffix in {".yml", ".yaml"}
+        if relative.as_posix() == "workflows/upstream/LICENSE.txt":
+            allowed = True
         if relative.as_posix() == "docs/validation.json":
             allowed = include_validation
         if allowed:

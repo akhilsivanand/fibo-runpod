@@ -121,6 +121,7 @@ class ReleaseChecks(unittest.TestCase):
         packager = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(packager)
         (self.root / 'docs/unreviewed-publication.json').write_text('{"private": true}')
+        (self.root / 'workflows/upstream/unreviewed.txt').write_text('unreviewed notes')
         (self.root / 'output').mkdir(exist_ok=True)
         (self.root / 'output/private.png').write_bytes(b'private fixture')
         output = Path(self.temporary.name) / 'source.zip'
@@ -128,4 +129,10 @@ class ReleaseChecks(unittest.TestCase):
         with zipfile.ZipFile(output) as archive:
             self.assertNotIn('fibo-runpod/docs/unreviewed-publication.json', archive.namelist())
             self.assertNotIn('fibo-runpod/output/private.png', archive.namelist())
+            self.assertNotIn('fibo-runpod/workflows/upstream/unreviewed.txt', archive.namelist())
             self.assertIn('fibo-runpod/handler.py', archive.namelist())
+            self.assertIn('fibo-runpod/workflows/upstream/image_fibo2_edit_turbo_pe.json', archive.namelist())
+            self.assertEqual(
+                archive.read('fibo-runpod/workflows/upstream/LICENSE.txt'),
+                (self.root / 'workflows/upstream/LICENSE.txt').read_bytes(),
+            )
