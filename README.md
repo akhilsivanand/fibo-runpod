@@ -10,7 +10,7 @@ This package adapts the authenticated gateway and persistent model layout from [
 
 ## Interactive ComfyUI
 
-Use the published Pod template when available, or create a Runpod GPU Pod from the tested image recorded in `deploy/pod-template.json`:
+Deploy the [public Runpod template](https://console.runpod.io/deploy?template=rxfq67i2yt&type=gpu), or create a GPU Pod from the tested image recorded in `deploy/pod-template.json`:
 
 1. Select a CUDA 13-compatible GPU with at least 24 GB VRAM, a 60 GB container disk, and persistent storage mounted at `/workspace` if you want files retained.
 2. Enable SSH and Runpod's native Connect token. Start `/opt/fibo/scripts/entrypoint.sh` with `FIBO_MODE=pod` and expose `8888/http,22/tcp`.
@@ -55,6 +55,8 @@ docker build -t fibo-comfyui:local .
 
 The maintainer dispatches [this repository's build workflow](.github/workflows/container.yml) on the reviewed Fibo source revision. Images are published to the dedicated public package `ghcr.io/akhilsivanand/fibo-comfyui:staging-<commit>`; release promotion reuses the tested manifest.
 
-The staging image `ghcr.io/akhilsivanand/fibo-comfyui@sha256:7487d8ab9784c0f8b4176b21332e0a3f6c762053b597379d3a94e44dfcae46d2` passed CPU package imports and native workflow/schema checks and was verified anonymously pullable. These checks do not establish successful GPU inference. A public release must also pass real image editing, Pod authentication and restart-preservation checks, and a fresh queue-worker edit against that exact image digest. `python scripts/check_release.py --publish` requires those dated results in `docs/validation.json`. GPU validation is pending.
+The image `ghcr.io/akhilsivanand/fibo-comfyui@sha256:7487d8ab9784c0f8b4176b21332e0a3f6c762053b597379d3a94e44dfcae46d2` passed real GPU validation on **29 October 2026** using an RTX 4090 (24 GB class), CUDA 13.0, and PyTorch 2.13.0+cu130. Both the ComfyUI browser and a fresh Runpod queue worker completed 1024 × 1024 edits with four steps and CFG 1. The browser edit took 55.4 seconds; the queue job reported 14.1 seconds execution after 255.3 seconds queue delay. These separate synthetic-image tests establish execution, not a speed or general quality comparison.
+
+The native Connect login, protected browser POST/WebSocket requests, template import/export, and restart retention of models, workflow, marker and output were verified. A fresh browser passed login and template import again after restart. All 84 source tests and container CPU/schema checks passed; anonymous registry access was verified. The temporary validation endpoint was deleted. See the dated [validation evidence](docs/validation.json), tied to the tested runtime revision and image digest. `python scripts/check_release.py --publish` enforces these publication gates. The observed Pod GPU rate was $0.89/hour, with storage billed separately; actual rates depend on the selected host.
 
 See [release instructions](docs/release.md). Hub submission, automated test success, and Runpod's manual approval are separate states; no approval is implied by this source package.

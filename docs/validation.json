@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "package_version": "0.1.0",
+  "source_revision": "d70fdcc55c1354e8b10cb2e97f926acdf31a23c4",
+  "image_digest": "sha256:7487d8ab9784c0f8b4176b21332e0a3f6c762053b597379d3a94e44dfcae46d2",
+  "validated_at": "2026-10-29T07:00:37.462401+00:00",
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4090",
+    "vram_gb": 25.253,
+    "vram_gib": 23.518,
+    "vram_bytes": 25252724736,
+    "nominal_vram_class_gb": 24,
+    "cuda_runtime": "13.0",
+    "driver": "595.91.07",
+    "nvidia_smi_memory_total_mib": 24564,
+    "torch": "2.13.0+cu130",
+    "quantized_cuda_backend_available": true,
+    "triton_backend_available": true
+  },
+  "comfyui": {
+    "version": "0.43.0",
+    "commit": "426f5eea52a7ece1dd599fff4cb6cd1f352ddd24",
+    "frontend": "1.57.4",
+    "kitchen": "0.2.40"
+  },
+  "source_checks": {
+    "tests_passed": 84,
+    "source_ci": "https://github.com/akhilsivanand/fibo-runpod/actions/runs/40828310546",
+    "container_build_and_cpu_checks": "https://github.com/akhilsivanand/fibo-runpod/actions/runs/40828626662",
+    "native_schema_template_and_import_checks_passed": true,
+    "anonymous_image_pull_verified": true
+  },
+  "pod": {
+    "fresh_volume": true,
+    "persistent_volume_gb": 60,
+    "container_disk_gb": 60,
+    "auth_verified": true,
+    "restart_preserved": true,
+    "browser_proof": {
+      "native_connect_mouse_click": true,
+      "landing_card_mouse_click": true,
+      "native_graph_to_prompt_matches_api": true,
+      "run_button_mouse_click": true,
+      "actual_frontend_prompt_request": true,
+      "browser_post_public_origin": true,
+      "frontend_websocket_preserved": true,
+      "only_owned_prompt_events_and_output": true,
+      "fresh_sampler_execution": true,
+      "no_direct_prompt_fetch": true,
+      "no_history_or_queue_content_reads": true
+    },
+    "authentication": {
+      "unauthenticated_status": 401,
+      "cross_site_connect": true,
+      "clean_url": true,
+      "cookie": {
+        "name": "__Host-fibo-session",
+        "secure": true,
+        "httpOnly": true,
+        "sameSite": "Strict",
+        "path": "/"
+      },
+      "javascript_cookie_hidden": true
+    },
+    "native_template_routes": {
+      "catalog_status": 200,
+      "asset_status": 200,
+      "asset_matches_source": true,
+      "native_link": "/?template=fibo2-edit-turbo&source=fibo"
+    },
+    "jobs": [
+      {
+        "preset": "edit",
+        "completed": true,
+        "width": 1024,
+        "height": 1024,
+        "seed": 729104,
+        "steps": 4,
+        "cfg": 1,
+        "image_sha256": "9283c5f861f6a98c63b4613269aa7f61443176d47744bc439467857bdcc6aa7c",
+        "server_execution_seconds": 55.397,
+        "client_wait_seconds": 57.322,
+        "fresh_sampler_execution": true
+      }
+    ],
+    "restart": {
+      "container_process_changed": true,
+      "models_size_inode_mtime_preserved": true,
+      "workflow_hash_inode_mtime_preserved": true,
+      "output_hash_inode_mtime_preserved": true,
+      "retention_marker_preserved": true,
+      "baked_runtime_hashes_preserved": true,
+      "fresh_browser_authentication": {
+        "unauthenticated_status": 401,
+        "cross_site_connect": true,
+        "clean_url": true,
+        "cookie": {
+          "name": "__Host-fibo-session",
+          "secure": true,
+          "httpOnly": true,
+          "sameSite": "Strict",
+          "path": "/"
+        },
+        "javascript_cookie_hidden": true
+      },
+      "native_template_import_and_api_export_verified": true,
+      "authenticated_readiness_verified": true
+    },
+    "model_paths": [
+      "diffusion_models/fibo2_edit_turbo_int8_convrot.safetensors",
+      "text_encoders/qwen3vl_4b_bf16.safetensors",
+      "vae/flux2-vae.safetensors"
+    ],
+    "observed_gpu_cost_usd_per_hour": 0.89,
+    "storage_billed_separately": true
+  },
+  "serverless": {
+    "fresh_worker": true,
+    "transport": "Runpod Serverless asynchronous queue API",
+    "worker_image_and_gpu_observed": true,
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "jobs": [
+      {
+        "preset": "edit",
+        "seed": 42,
+        "width": 1024,
+        "height": 1024,
+        "steps": 4,
+        "cfg": 1.0,
+        "input_sha256": "15a8ff7e6f4d28a62c24aeb2d7e85aed2ca5df129ed5f1ca3f37409309d2d0e9",
+        "request_kind": "exact_hub_test",
+        "completed": true,
+        "image_sha256": "574198c7b679c5e4446be2c7088e8ee56e42280996a70da524388bf5f3c73085",
+        "image_bytes": 274943,
+        "image_format": "PNG",
+        "delay_time_ms": 255290,
+        "execution_time_ms": 14078
+      }
+    ],
+    "temporary_endpoint_deleted_404": true
+  },
+  "visual_validation": {
+    "source": "Original synthetic red-mug fixture authored for this package",
+    "pod_result": "Mug changed to green; handle, beige background and brown tabletop retained.",
+    "serverless_result": "Mug changed to blue; handle, beige background and brown tabletop retained.",
+    "prior_user_images_uploaded": false
+  },
+  "limits": [
+    "Execution was tested on a synthetic image; these observations are not a general image-quality or speed benchmark.",
+    "This package exposes one-image editing without the optional upstream prompt enhancer.",
+    "Hub submission and manual approval are recorded separately; passing these checks does not imply a listed Hub release."
+  ]
+}
