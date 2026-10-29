@@ -15,11 +15,27 @@ Deploy the [public Runpod template](https://console.runpod.io/deploy?template=rx
 1. Select a CUDA 13-compatible GPU with at least 24 GB VRAM, a 60 GB container disk, and persistent storage mounted at `/workspace` if you want files retained.
 2. Enable SSH and Runpod's native Connect token. Start `/opt/fibo/scripts/entrypoint.sh` with `FIBO_MODE=pod` and expose `8888/http,22/tcp`.
 3. Open **Connect → Fibo 2 ComfyUI**. The protected startup page reports preparation while three model files download and their SHA256 hashes are verified. The total download is **17.62 GB**; startup time depends on the host and network.
-4. Open **Fibo 2 Edit Turbo**, upload your source image, enter an edit instruction and click **Run**.
+4. Open **Fibo 2 Edit Turbo**, upload your source image, set **Scale** (1 = input size, 0.5 = half width/height, 2 = double), enter an edit instruction and click **Run**. Width and height are calculated from the uploaded image and rounded down to multiples of 16.
+
+The scale control is a workflow update applied to the existing live Pod without restarting ComfyUI. It is present in this source checkout and the persistent saved workflow; the published 0.1.0 image still contains the original fixed-resolution workflow. The queue API continues to accept explicit width/height.
 
 The native workflow shortcut is `/?template=fibo2-edit-turbo&source=fibo`. You can use an ordinary edit instruction or supply a structured VGL caption. The supplied workflow is a single-image edit; it does not install the optional prompt-enhancement model from the upstream example.
 
 Models and user files live under `/workspace/ComfyUI/{models,input,output,user}`. `/opt/comfyui/models` refers to the same model tree. Package updates preserve changed user workflows. GPU charges and any retained storage are billed by Runpod; check your actual returned rate and stop the Pod when finished.
+
+## Optional image creation
+
+The additional **Fibo 2 Dev** workflow creates an image from a text prompt without an input image. Open **Workflows → FIBO → fibo2-create-dev** after installing it. Its default is 1024 × 1024, 50 Euler/simple steps and CFG 5. It uses the same Qwen3-VL encoder and FLUX.2 VAE as editing, plus one **8.41 GB** Dev INT8 checkpoint. The optional upstream prompt enhancer is not installed.
+
+The creation files are an addition to this source checkout and the live Pod; the immutable 0.1.0 image does not include them. To install from this checkout into an existing prepared Fibo workspace, run:
+
+```bash
+python scripts/install_creation.py --data-root /workspace/ComfyUI
+```
+
+The installer verifies the pinned Dev checksum, preserves an existing changed workflow, and does not restart ComfyUI. Models and the saved workflow remain on persistent storage. This is an interactive ComfyUI workflow; the queue API still exposes the `edit` preset. Dev weights have the same CC BY-NC 4.0 restriction.
+
+On 29 October 2026, a real browser run created a 1024 × 1024 image on the existing RTX 4090 in 43.883 seconds of server execution. The edit Scale test converted a 512 × 512 input to 768 × 768 at 1.5×. Native frontend export, authenticated POST/WebSocket and fresh sampler execution passed. Neither workflow installation restarted the container, ComfyUI, or gateway. See [creation evidence](docs/workflow-creation-validation.json) and [scale evidence](docs/workflow-scale-validation.json).
 
 ## Queue API
 

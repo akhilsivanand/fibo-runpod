@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "default_profile": "create",
+  "total_size_bytes": 8408562474,
+  "models": [
+    {
+      "id": "fibo2-dev-int8",
+      "path": "diffusion_models/fibo2_dev_int8_convrot.safetensors",
+      "size": 8408562474,
+      "sha256": "063dd397395809fd22234c6bd32932cfcb22619f4d2282bdbf1dc58c406fe325",
+      "license": "CC-BY-NC-4.0",
+      "url": "https://huggingface.co/Comfy-Org/Fibo-2.0/resolve/4742d4bec410034142c8e65559e5f00c6f29eccb/diffusion_models/fibo2_dev_int8_convrot.safetensors",
+      "profiles": [
+        "create"
+      ],
+      "source": {
+        "repository": "Comfy-Org/Fibo-2.0",
+        "revision": "4742d4bec410034142c8e65559e5f00c6f29eccb",
+        "path": "diffusion_models/fibo2_dev_int8_convrot.safetensors",
+        "homepage": "https://huggingface.co/Comfy-Org/Fibo-2.0",
+        "original_model": "https://huggingface.co/briaai/Fibo-2.0-dev",
+        "repository_license": "CC-BY-NC-4.0"
+      }
+    }
+  ]
+}

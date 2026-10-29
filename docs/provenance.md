@@ -30,7 +30,7 @@ The repackaging repository declares CC BY-NC 4.0 for its model release; that dec
 
 ## Derived preset
 
-`config/workflows.json` selects a single preset, `edit`, with a simple UI graph and an API graph named `fibo2-edit-turbo.json`. The derivative retains the source model combination and Turbo sampler settings, removes optional prompt enhancement, comparison and batch helper nodes, uses one uploaded reference, and sets an explicit 1024 × 1024 default. Model download metadata in the derived UI graph is revision-pinned. Layout, labels and usage notes are revised. No custom inference node or external API is required.
+`config/workflows.json` selects a single preset, `edit`, with a simple UI graph and an API graph named `fibo2-edit-turbo.json`. The derivative retains the source model combination and Turbo sampler settings, removes optional prompt enhancement, comparison and batch helper nodes, uses one uploaded reference, and calculates output dimensions from its size multiplied by a Scale control (default 1). The immutable 0.1.0 image retains its original 1024 × 1024 default. Model download metadata in the derived UI graph is revision-pinned. Layout, labels and usage notes are revised. No custom inference node or external API is required.
 
 The upstream graph's optional local Qwen3-VL-8B prompt writer is not installed. The native conditioning node accepts plain edit instructions or a VGL JSON caption with an `edit_instruction` key. A detailed structured caption can improve control; the minimal preset does not generate that caption for the user. [Diffusers' Fibo 2 documentation](https://huggingface.co/docs/diffusers/en/api/pipelines/bria_fibo2) documents both prompt forms.
 
@@ -46,9 +46,18 @@ The API graph uses these native nodes:
 | `5` | `KSampler` | Euler/simple, four steps, CFG 1, denoise 1, seed 1234 |
 | `6` | `VAEDecode` | Decode sampled latent |
 | `7` | `SaveImage` | Save edited output |
+| `12` | `PrimitiveFloat` | One user-facing scale factor, default 1 |
+| `13` | `ImageScaleBy` | Calculate the scaled reference size |
+| `14` | `GetImageSize` | Feed calculated width and height to conditioning |
 
 `TextEncodeFibo2` receives the image through the flat API input **`images.image_1`**, not an `images` dictionary. The V3 Autogrow schema expands that dotted input name, and `build_nested_inputs` reconstructs the dictionary for `execute`. Its three outputs are positive conditioning at index 0, negative conditioning at index 1 and latent at index 2. Width, height and batch size are inputs on node `4`; there is no separate empty-latent node.
 
-The source image is mandatory in this package. The bundled graphs leave the LoadImage selection empty for the user or API wrapper to supply. With one reference, ComfyUI resizes and center-crops it to the output dimensions. The UI can set width/height to zero for a trained aspect-ratio bucket around one megapixel; the package default is explicitly 1024 × 1024. The preset covers single-image editing. Masked and multiple-reference editing are capabilities of the underlying model, not additional validated presets in this package.
+A source image is mandatory for the edit preset. The bundled graphs leave the LoadImage selection empty for the user or API wrapper to supply. With one reference, ComfyUI resizes and center-crops it to the output dimensions. The current UI connects width and height to the uploaded image size multiplied by Scale. Fibo floors those dimensions to multiples of 16, preserving the aspect ratio apart from rounding. The queue wrapper still replaces these inputs with its explicit width/height settings (1024 × 1024 by default). The preset covers single-image editing. Masked and multiple-reference editing are capabilities of the underlying model, not additional validated presets in this package.
 
 The API graph was derived directly from the nonnested native graph and pinned node schemas. Static link/schema checks do not replace a frontend export check or real GPU inference.
+
+## Optional Dev creation workflow
+
+The creation workflow derives from Comfy Org's [Dev example](https://github.com/Comfy-Org/workflow_templates/blob/3c2199b9362457b12b9c60c6cc303501526ebd62/templates/image_fibo2_edit_dev_pe.json), preserved byte-for-byte in `workflows/upstream/image_fibo2_edit_dev_pe.json` (SHA256 `24be29c7dfdf05aef158fb14754c51cf01f346861a02e1e4914b0c7e1e782aae`). The reference-image and optional prompt-enhancer paths are removed; the native TextEncodeFibo2 node accepts text alone. The derived graph retains the official structured negative, 50 steps, CFG 5, Euler/simple, and uses 1024 × 1024. The existing upstream MIT license applies.
+
+`config/creation-models.json` pins the additional Dev INT8 file to the same Comfy-Org/Fibo-2.0 revision as the edit assets. Bria documents Dev for text-to-image and Edit Turbo for editing. This optional model adds 8,408,562,474 bytes; both workflows share the existing encoder and VAE.

@@ -1,0 +1,610 @@
+{
+  "id": "e642cb37-4568-4e14-8eef-50e101788568",
+  "revision": 0,
+  "last_node_id": 11,
+  "last_link_id": 10,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "UNETLoader",
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        410,
+        90
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "MODEL",
+          "nameLocked": null,
+          "removable": null,
+          "type": "MODEL",
+          "pos": null,
+          "slot_index": null,
+          "links": [
+            4
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UNETLoader",
+        "models": [
+          {
+            "name": "fibo2_dev_int8_convrot.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/Fibo-2.0/resolve/4742d4bec410034142c8e65559e5f00c6f29eccb/diffusion_models/fibo2_dev_int8_convrot.safetensors",
+            "hash": "063dd397395809fd22234c6bd32932cfcb22619f4d2282bdbf1dc58c406fe325",
+            "hash_type": "SHA256",
+            "directory": "diffusion_models"
+          }
+        ],
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0"
+      },
+      "widgets_values": [
+        "fibo2_dev_int8_convrot.safetensors",
+        "default"
+      ],
+      "widgets_values_named": {
+        "unet_name": "fibo2_dev_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      },
+      "title": "Fibo 2 Dev \u2014 INT8"
+    },
+    {
+      "id": 2,
+      "type": "CLIPLoader",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        410,
+        110
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "CLIP",
+          "nameLocked": null,
+          "removable": null,
+          "type": "CLIP",
+          "pos": null,
+          "slot_index": null,
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPLoader",
+        "models": [
+          {
+            "name": "qwen3vl_4b_bf16.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/Fibo-2.0/resolve/4742d4bec410034142c8e65559e5f00c6f29eccb/text_encoders/qwen3vl_4b_bf16.safetensors",
+            "hash": "36f3ff447ef59201722e8f9ce6020c9819fdcfba6aa2608c4e09b1c0ce114e34",
+            "hash_type": "SHA256",
+            "directory": "text_encoders"
+          }
+        ],
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0"
+      },
+      "widgets_values": [
+        "qwen3vl_4b_bf16.safetensors",
+        "fibo2",
+        "default"
+      ],
+      "widgets_values_named": {
+        "clip_name": "qwen3vl_4b_bf16.safetensors",
+        "type": "fibo2",
+        "device": "default"
+      },
+      "title": "Qwen3-VL 4B \u2014 BF16"
+    },
+    {
+      "id": 3,
+      "type": "VAELoader",
+      "pos": [
+        40,
+        420
+      ],
+      "size": [
+        410,
+        60
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "VAE",
+          "nameLocked": null,
+          "removable": null,
+          "type": "VAE",
+          "pos": null,
+          "slot_index": null,
+          "links": [
+            9
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader",
+        "models": [
+          {
+            "name": "flux2-vae.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/Fibo-2.0/resolve/4742d4bec410034142c8e65559e5f00c6f29eccb/vae/flux2-vae.safetensors",
+            "hash": "868fe7b343cc8f3a19dbcfcafbc3d5f888802be3f89bd81b65b3621a066ce8f3",
+            "hash_type": "SHA256",
+            "directory": "vae"
+          }
+        ],
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0"
+      },
+      "widgets_values": [
+        "flux2-vae.safetensors"
+      ],
+      "widgets_values_named": {
+        "vae_name": "flux2-vae.safetensors"
+      },
+      "title": "FLUX.2 VAE"
+    },
+    {
+      "id": 4,
+      "type": "TextEncodeFibo2",
+      "pos": [
+        510,
+        80
+      ],
+      "size": [
+        470,
+        480
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "positive",
+          "nameLocked": null,
+          "removable": null,
+          "type": "CONDITIONING",
+          "pos": null,
+          "slot_index": null,
+          "links": [
+            5
+          ]
+        },
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "negative",
+          "nameLocked": null,
+          "removable": null,
+          "type": "CONDITIONING",
+          "pos": null,
+          "slot_index": null,
+          "links": [
+            6
+          ]
+        },
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "latent",
+          "nameLocked": null,
+          "removable": null,
+          "type": "LATENT",
+          "pos": null,
+          "slot_index": null,
+          "links": [
+            7
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TextEncodeFibo2",
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0"
+      },
+      "widgets_values": [
+        "A serene alpine lake at sunrise, clear turquoise water reflecting rugged snow-capped mountains, a small wooden cabin among pine trees on the shore, warm golden light on the mountain peaks, natural colors, detailed rocks and trees, crisp landscape photography.",
+        "{\"short_description\":\"\",\"objects\":[{\"description\":\"the main subject\",\"texture\":\"smooth, featureless, plastic-like, airbrushed, no fine surface detail\",\"appearance_details\":\"soft blurred edges, simplified shapes, no fine detail\",\"skin_tone_and_texture\":\"waxy airbrushed skin, poreless, plastic smooth\"}],\"background_setting\":\"a plain seamless studio backdrop, perfectly smooth gradient, blurred and featureless, no visible texture\",\"lighting\":{},\"aesthetics\":{\"artifacts\":[\"oversaturated colours\",\"neon colour cast\",\"overexposed highlights\",\"lens flare\",\"slight blur\",\"motion blur\",\"haze\"]},\"photographic_characteristics\":{\"depth_of_field\":\"shallow, heavy bokeh obscuring most of the frame\",\"focus\":\"soft, slightly out of focus, lacking fine texture\"},\"style_medium\":\"\",\"context\":\"\",\"artistic_style\":\"\"}",
+        1024,
+        1024,
+        1
+      ],
+      "widgets_values_named": {
+        "prompt": "A serene alpine lake at sunrise, clear turquoise water reflecting rugged snow-capped mountains, a small wooden cabin among pine trees on the shore, warm golden light on the mountain peaks, natural colors, detailed rocks and trees, crisp landscape photography.",
+        "negative_prompt": "{\"short_description\":\"\",\"objects\":[{\"description\":\"the main subject\",\"texture\":\"smooth, featureless, plastic-like, airbrushed, no fine surface detail\",\"appearance_details\":\"soft blurred edges, simplified shapes, no fine detail\",\"skin_tone_and_texture\":\"waxy airbrushed skin, poreless, plastic smooth\"}],\"background_setting\":\"a plain seamless studio backdrop, perfectly smooth gradient, blurred and featureless, no visible texture\",\"lighting\":{},\"aesthetics\":{\"artifacts\":[\"oversaturated colours\",\"neon colour cast\",\"overexposed highlights\",\"lens flare\",\"slight blur\",\"motion blur\",\"haze\"]},\"photographic_characteristics\":{\"depth_of_field\":\"shallow, heavy bokeh obscuring most of the frame\",\"focus\":\"soft, slightly out of focus, lacking fine texture\"},\"style_medium\":\"\",\"context\":\"\",\"artistic_style\":\"\"}",
+        "width": 1024,
+        "height": 1024,
+        "batch_size": 1
+      },
+      "color": "#322",
+      "bgcolor": "#533",
+      "title": "1. Describe the image to create"
+    },
+    {
+      "id": 5,
+      "type": "KSampler",
+      "pos": [
+        1010,
+        80
+      ],
+      "size": [
+        320,
+        500
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "model",
+          "nameLocked": null,
+          "removable": null,
+          "type": "MODEL",
+          "pos": null,
+          "link": 4
+        },
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "positive",
+          "nameLocked": null,
+          "removable": null,
+          "type": "CONDITIONING",
+          "pos": null,
+          "link": 5
+        },
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "negative",
+          "nameLocked": null,
+          "removable": null,
+          "type": "CONDITIONING",
+          "pos": null,
+          "link": 6
+        },
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "latent_image",
+          "nameLocked": null,
+          "removable": null,
+          "type": "LATENT",
+          "pos": null,
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "LATENT",
+          "nameLocked": null,
+          "removable": null,
+          "type": "LATENT",
+          "pos": null,
+          "slot_index": null,
+          "links": [
+            8
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler",
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0"
+      },
+      "widgets_values": [
+        729106,
+        "fixed",
+        50,
+        5.0,
+        "euler",
+        "simple",
+        1
+      ],
+      "widgets_values_named": {
+        "seed": 729106,
+        "control_after_generate": "fixed",
+        "steps": 50,
+        "cfg": 5.0,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      },
+      "title": "2. Run \u2014 Dev, 50 steps"
+    },
+    {
+      "id": 6,
+      "type": "VAEDecode",
+      "pos": [
+        1010,
+        700
+      ],
+      "size": [
+        300,
+        50
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "samples",
+          "nameLocked": null,
+          "removable": null,
+          "type": "LATENT",
+          "pos": null,
+          "link": 8
+        },
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "vae",
+          "nameLocked": null,
+          "removable": null,
+          "type": "VAE",
+          "pos": null,
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "IMAGE",
+          "nameLocked": null,
+          "removable": null,
+          "type": "IMAGE",
+          "pos": null,
+          "slot_index": null,
+          "links": [
+            10
+          ]
+        }
+      ],
+      "title": "Decode generated image",
+      "properties": {
+        "Node name for S&R": "VAEDecode",
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0"
+      }
+    },
+    {
+      "id": 7,
+      "type": "SaveImage",
+      "pos": [
+        1410,
+        80
+      ],
+      "size": [
+        460,
+        500
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "images",
+          "nameLocked": null,
+          "removable": null,
+          "type": "IMAGE",
+          "pos": null,
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "images",
+          "nameLocked": null,
+          "removable": null,
+          "type": "IMAGE",
+          "pos": null,
+          "slot_index": null,
+          "links": null
+        }
+      ],
+      "title": "Generated image \u2014 saved automatically",
+      "properties": {
+        "Node name for S&R": "SaveImage",
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0"
+      },
+      "widgets_values": [
+        "fibo2-create-dev"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "fibo2-create-dev"
+      }
+    },
+    {
+      "id": 11,
+      "type": "MarkdownNote",
+      "pos": [
+        40,
+        560
+      ],
+      "size": [
+        420,
+        440
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "## Fibo 2 Create \u2014 Dev\n\n1. Describe the image you want to create.\n2. Click Run. No input image is required.\n\nDefaults: **1024 \u00d7 1024**, **50 steps**, **CFG 5**, Euler / simple. Dev is the supported Fibo 2 text-to-image model. Keep output near one megapixel; dimensions use multiples of 16.\n\nThe prompt accepts plain text or a structured VGL caption. The advanced negative prompt uses Bria's published text-to-image negative. This workflow does not install or call a prompt enhancer or an external API.\n\nRequires the additional **Fibo 2 Dev INT8** checkpoint (8.41 GB). It reuses the existing Qwen3-VL 4B encoder and FLUX.2 VAE.\n\nFibo model weights \u00a9 BRIA AI, **CC BY-NC 4.0**. Commercial use requires a separate Bria agreement. Qwen encoder and FLUX.2 VAE retain their component licenses. See THIRD_PARTY_NOTICES.txt.\n\nDerived from Comfy Org's MIT-licensed Fibo 2 Dev template."
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      4,
+      0,
+      "CLIP"
+    ],
+    [
+      4,
+      1,
+      0,
+      5,
+      0,
+      "MODEL"
+    ],
+    [
+      5,
+      4,
+      0,
+      5,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      6,
+      4,
+      1,
+      5,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      7,
+      4,
+      2,
+      5,
+      3,
+      "LATENT"
+    ],
+    [
+      8,
+      5,
+      0,
+      6,
+      0,
+      "LATENT"
+    ],
+    [
+      9,
+      3,
+      0,
+      6,
+      1,
+      "VAE"
+    ],
+    [
+      10,
+      6,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.7,
+      "offset": [
+        15,
+        15
+      ]
+    },
+    "frontendVersion": "1.57.4"
+  },
+  "version": 0.4
+}

@@ -7,7 +7,7 @@
       },
       "class_type": "UNETLoader",
       "_meta": {
-        "title": "Fibo 2 Edit Turbo — INT8"
+        "title": "Fibo 2 Edit Turbo \u2014 INT8"
       }
     },
     "2": {
@@ -18,7 +18,7 @@
       },
       "class_type": "CLIPLoader",
       "_meta": {
-        "title": "Qwen3-VL 4B — BF16"
+        "title": "Qwen3-VL 4B \u2014 BF16"
       }
     },
     "3": {
@@ -46,13 +46,19 @@
           "10",
           0
         ],
-        "width": 1024,
-        "height": 1024,
+        "width": [
+          "14",
+          0
+        ],
+        "height": [
+          "14",
+          1
+        ],
         "batch_size": 1
       },
       "class_type": "TextEncodeFibo2",
       "_meta": {
-        "title": "2. Describe the edit"
+        "title": "3. Describe the edit"
       }
     },
     "5": {
@@ -82,7 +88,7 @@
       },
       "class_type": "KSampler",
       "_meta": {
-        "title": "3. Run — Turbo, 4 steps"
+        "title": "4. Run \u2014 Turbo, 4 steps"
       }
     },
     "6": {
@@ -111,7 +117,7 @@
       },
       "class_type": "SaveImage",
       "_meta": {
-        "title": "Edited image — saved automatically"
+        "title": "Edited image \u2014 saved automatically"
       }
     },
     "10": {
@@ -121,6 +127,44 @@
       "class_type": "LoadImage",
       "_meta": {
         "title": "1. Upload the image to edit"
+      }
+    },
+    "12": {
+      "class_type": "PrimitiveFloat",
+      "inputs": {
+        "value": 1.0
+      },
+      "_meta": {
+        "title": "2. Scale (1 = input size)"
+      }
+    },
+    "13": {
+      "class_type": "ImageScaleBy",
+      "inputs": {
+        "image": [
+          "10",
+          0
+        ],
+        "upscale_method": "bicubic",
+        "scale_by": [
+          "12",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "Calculate scaled image size"
+      }
+    },
+    "14": {
+      "class_type": "GetImageSize",
+      "inputs": {
+        "image": [
+          "13",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "Automatic width and height"
       }
     }
   }

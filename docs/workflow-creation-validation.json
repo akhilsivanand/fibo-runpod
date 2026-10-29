@@ -1,0 +1,72 @@
+{
+  "validated_at": "2026-10-29T07:54:49.371572+00:00",
+  "scope": "Optional creation workflow added to the existing running Pod; no new image build or restart.",
+  "base_image": "ghcr.io/akhilsivanand/fibo-comfyui@sha256:7487d8ab9784c0f8b4176b21332e0a3f6c762053b597379d3a94e44dfcae46d2",
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "model": {
+    "id": "fibo2-dev-int8",
+    "path": "diffusion_models/fibo2_dev_int8_convrot.safetensors",
+    "size": 8408562474,
+    "sha256": "063dd397395809fd22234c6bd32932cfcb22619f4d2282bdbf1dc58c406fe325",
+    "license": "CC-BY-NC-4.0",
+    "url": "https://huggingface.co/Comfy-Org/Fibo-2.0/resolve/4742d4bec410034142c8e65559e5f00c6f29eccb/diffusion_models/fibo2_dev_int8_convrot.safetensors",
+    "profiles": [
+      "create"
+    ],
+    "source": {
+      "repository": "Comfy-Org/Fibo-2.0",
+      "revision": "4742d4bec410034142c8e65559e5f00c6f29eccb",
+      "path": "diffusion_models/fibo2_dev_int8_convrot.safetensors",
+      "homepage": "https://huggingface.co/Comfy-Org/Fibo-2.0",
+      "original_model": "https://huggingface.co/briaai/Fibo-2.0-dev",
+      "repository_license": "CC-BY-NC-4.0"
+    }
+  },
+  "additional_model_bytes": 8408562474,
+  "model_size_and_sha256_verified": true,
+  "shared_encoder": "qwen3vl_4b_bf16.safetensors",
+  "shared_vae": "flux2-vae.safetensors",
+  "total_edit_and_creation_model_bytes": 26029055624,
+  "ui_sha256": "759725938fb27d1af964cd9fb3e724df1df5f4531fd20db728a177cdd0bf9463",
+  "api_sha256": "9f1f5ea638b444f086b7114be440aa4db612b610e11746851f89e2dac04acd46",
+  "browser_proof": {
+    "native_connect_mouse_click": true,
+    "direct_native_template_navigation": true,
+    "native_graph_to_prompt_matches_api": true,
+    "run_button_mouse_click": true,
+    "actual_frontend_prompt_request": true,
+    "browser_post_public_origin": true,
+    "frontend_websocket_preserved": true,
+    "only_owned_prompt_events_and_output": true,
+    "fresh_sampler_execution": true,
+    "no_direct_prompt_fetch": true,
+    "no_explicit_history_or_queue_content_requests": true,
+    "text_only_creation_verified": true,
+    "no_image_upload": true
+  },
+  "job": {
+    "completed": true,
+    "seed": 729106,
+    "steps": 50,
+    "cfg": 5,
+    "sampler": "euler",
+    "scheduler": "simple",
+    "width": 1024,
+    "height": 1024,
+    "source_image_required": false,
+    "uploads": 0,
+    "image_sha256": "bf05a161674f1eb01633e1c557c1badb970b39953da082b2c772f730da383621",
+    "server_execution_seconds": 43.883,
+    "client_wait_seconds": 57.482,
+    "fresh_sampler_execution": true
+  },
+  "visual_validation": "Alpine lake, snow-capped mountains, pine trees and wooden cabin match the text prompt.",
+  "persistent_workflow_saved": true,
+  "installer_ran_successfully": true,
+  "restart_performed": false,
+  "limits": [
+    "This validates the optional live ComfyUI creation workflow, not a new container image or serverless creation preset.",
+    "The immutable 0.1.0 image and release remain unchanged.",
+    "One validation image is execution evidence, not a general quality or speed benchmark."
+  ]
+}

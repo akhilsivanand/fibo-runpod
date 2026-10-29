@@ -1,0 +1,38 @@
+{
+  "validated_at": "2026-10-29T07:40:13.474119+00:00",
+  "scope": "Live Pod workflow update without restarting; separate from the immutable 0.1.0 image validation.",
+  "operation": "Input dimensions multiplied by one Scale control; native Fibo floors dimensions to multiples of 16.",
+  "scale_default": 1,
+  "native_nodes_added": [
+    "PrimitiveFloat",
+    "ImageScaleBy",
+    "GetImageSize"
+  ],
+  "ui_sha256": "63c7986ae3c0318f7c6724a883c771da68f726a5358cb332da19145a94b9171b",
+  "api_sha256": "542f72fd70fc9a65719acf5c8620c9fb9764b5f3bd769ccb4ea20be1d984e0f9",
+  "browser_native_export_matches": true,
+  "manual_width_height_widgets_hidden": true,
+  "test": {
+    "input_width": 512,
+    "input_height": 512,
+    "scale": 1.5,
+    "output_width": 768,
+    "output_height": 768,
+    "seed": 729105,
+    "steps": 4,
+    "cfg": 1,
+    "completed": true,
+    "fresh_sampler_execution": true,
+    "image_sha256": "989907e4355ec7754c4a3ee3546052ac5068ca37d796d42f8dd63d502c973e21",
+    "server_execution_seconds": 5.394,
+    "jobs_submitted": 1
+  },
+  "same_comfyui_and_gateway_processes": true,
+  "container_restarted": false,
+  "persistent_workflow_saved": true,
+  "original_workflow_backup_retained": true,
+  "source_tests_passed": 21,
+  "test_harness_note": "The first result check assumed 1024-square output. Corrected the checker and downloaded the same completed output; no second generation.",
+  "visual_validation": "Green mug with handle, background and tabletop retained.",
+  "publication_note": "The public 0.1.0 image retains the original fixed-resolution workflow. This report validates the live workflow update only."
+}

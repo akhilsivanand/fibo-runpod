@@ -7,20 +7,23 @@ ComfyUI, its frontend, dependencies, the base image, or derived workflows.
 Model files are downloaded from public upstream URLs at first boot; neither
 the source package nor its image redistributes the model weight files.
 
-Fibo 2.0 Edit Turbo diffusion model
----------------------------------
+Fibo 2.0 Dev and Edit Turbo diffusion models
+------------------------------------------
 Author and copyright: BRIA AI.
 License: Creative Commons Attribution-NonCommercial 4.0 International.
   https://creativecommons.org/licenses/by-nc/4.0/
   https://creativecommons.org/licenses/by-nc/4.0/legalcode
 Original:
   https://huggingface.co/briaai/Fibo-2.0-edit-turbo
+  https://huggingface.co/briaai/Fibo-2.0-dev
 ComfyUI repackaging by Comfy Org:
   https://huggingface.co/Comfy-Org/Fibo-2.0
 Pinned revision:
   4742d4bec410034142c8e65559e5f00c6f29eccb
 File:
   diffusion_models/fibo2_edit_turbo_int8_convrot.safetensors
+Optional creation asset:
+  diffusion_models/fibo2_dev_int8_convrot.safetensors
 
 The Comfy Org repack merges and renames the original transformer tensors.
 This package selects its INT8 Hadamard-rotation, per-channel quantization,
@@ -76,12 +79,17 @@ Authors: Comfy Org and workflow-template contributors.
 License: MIT.
 Pinned original:
   https://github.com/Comfy-Org/workflow_templates/blob/3c2199b9362457b12b9c60c6cc303501526ebd62/templates/image_fibo2_edit_turbo_pe.json
-The original file and its license are preserved under workflows/upstream.
+The optional creation workflow also derives from:
+  https://github.com/Comfy-Org/workflow_templates/blob/3c2199b9362457b12b9c60c6cc303501526ebd62/templates/image_fibo2_edit_dev_pe.json
+Both original files and their license are preserved under workflows/upstream.
 The installed derivative removes optional prompt enhancement, comparison
-and batch helpers, uses one uploaded input, pins model URLs, sets explicit
-1024x1024 dimensions, and revises layout, labels and instructions. It retains
-four-step Euler/simple sampling with CFG 1. The API graph is separately
-derived from the native node schemas. See docs/provenance.md.
+and batch helpers, uses one uploaded input, pins model URLs, and revises
+layout, labels and instructions. The current edit graph calculates dimensions
+from the input image and a scale factor; the 0.1.0 image used 1024x1024.
+Editing retains four-step Euler/simple sampling with CFG 1. The creation
+derivative removes reference images and retains Dev sampling at 50 steps,
+CFG 5, Euler/simple and 1024x1024. API graphs are separately derived from
+the native node schemas. See docs/provenance.md.
 
 MOSS Runpod launcher and base image
 ----------------------------------

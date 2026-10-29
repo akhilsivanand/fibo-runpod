@@ -1,8 +1,8 @@
 {
   "id": "c7e5f360-6f27-458a-b4dc-3acf96c34c4e",
-  "revision": 0,
-  "last_node_id": 11,
-  "last_link_id": 10,
+  "revision": 1,
+  "last_node_id": 14,
+  "last_link_id": 15,
   "nodes": [
     {
       "id": 1,
@@ -205,7 +205,8 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            3
+            3,
+            11
           ]
         },
         {
@@ -244,7 +245,7 @@
       "id": 4,
       "type": "TextEncodeFibo2",
       "pos": [
-        550,
+        590,
         80
       ],
       "size": [
@@ -252,7 +253,7 @@
         420
       ],
       "flags": {},
-      "order": 4,
+      "order": 7,
       "mode": 0,
       "showAdvanced": true,
       "inputs": [
@@ -278,6 +279,22 @@
           "type": "VAE",
           "shape": 7,
           "link": 2
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": 14,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": 15,
+          "widget": {
+            "name": "height"
+          }
         }
       ],
       "outputs": [
@@ -351,7 +368,7 @@
       },
       "color": "#322",
       "bgcolor": "#533",
-      "title": "2. Describe the edit"
+      "title": "3. Describe the edit"
     },
     {
       "id": 5,
@@ -365,7 +382,7 @@
         500
       ],
       "flags": {},
-      "order": 5,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -462,7 +479,7 @@
         "scheduler": "simple",
         "denoise": 1
       },
-      "title": "3. Run \u2014 Turbo, 4 steps"
+      "title": "4. Run \u2014 Turbo, 4 steps"
     },
     {
       "id": 6,
@@ -476,7 +493,7 @@
         50
       ],
       "flags": {},
-      "order": 6,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -543,7 +560,7 @@
         500
       ],
       "flags": {},
-      "order": 7,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -593,22 +610,172 @@
       "id": 11,
       "type": "MarkdownNote",
       "pos": [
-        550,
-        580
+        590,
+        750
       ],
       "size": [
         390,
         450
       ],
       "flags": {},
-      "order": 8,
+      "order": 11,
       "mode": 0,
       "inputs": [],
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "## Fibo 2 Edit Turbo\n\n1. Upload an image.\n2. Enter an edit instruction, or a VGL JSON caption with `edit_instruction`.\n3. Run. The result is saved automatically.\n\nDefaults: **1024 \u00d7 1024**, **4 steps**, **CFG 1**, Euler / simple, seed 1234. For your source aspect ratio, set width and height to 0 to use an automatic trained bucket around 1 megapixel. Fixed dimensions resize and center-crop the input.\n\nThis simple local workflow has no prompt-enhancer or external API dependency. The original upstream template with its optional enhancer is preserved in the source package. This package covers single-image edits; it does not add mask or multi-reference presets.\n\nFibo model weights \u00a9 BRIA AI, **CC BY-NC 4.0**. Commercial use requires a separate Bria agreement. Qwen encoder and FLUX.2 VAE retain their component licenses. See the package's THIRD_PARTY_NOTICES.txt.\n\nDerived from Comfy Org's MIT-licensed Fibo 2 Turbo template."
+        "## Fibo 2 Edit Turbo\n\n1. Upload an image.\n2. Set **Scale**: **1** = input size, **0.5** = half width/height, **2** = double width/height.\n3. Describe the edit and Run.\n\nWidth and height come from your uploaded image automatically. Fibo rounds both dimensions down to multiples of 16 (minimum 16). Scaling keeps the input aspect ratio apart from that rounding. No resolution entry is needed.\n\nDefaults: scale **1**, **4 steps**, **CFG 1**, Euler / simple. Larger scale values require more GPU memory. The two collapsed helper nodes calculate the dimensions; you only need the Scale control.\n\nThis local workflow has no prompt-enhancer or external API dependency. It supports single-image edits.\n\nFibo model weights \u00a9 BRIA AI, **CC BY-NC 4.0**. Commercial use requires a separate Bria agreement. Qwen encoder and FLUX.2 VAE retain their component licenses. See THIRD_PARTY_NOTICES.txt.\n\nDerived from Comfy Org's MIT-licensed Fibo 2 Turbo template."
       ]
+    },
+    {
+      "id": 12,
+      "type": "PrimitiveFloat",
+      "title": "2. Scale (1 = input size)",
+      "pos": [
+        590,
+        570
+      ],
+      "size": [
+        340,
+        90
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "FLOAT",
+          "type": "FLOAT",
+          "links": [
+            12
+          ],
+          "slot_index": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PrimitiveFloat",
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0"
+      },
+      "widgets_values": [
+        1.0
+      ],
+      "widgets_values_named": {
+        "value": 1.0
+      }
+    },
+    {
+      "id": 13,
+      "type": "ImageScaleBy",
+      "title": "Calculate scaled image size",
+      "pos": [
+        40,
+        1300
+      ],
+      "size": [
+        340,
+        90
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 11
+        },
+        {
+          "name": "scale_by",
+          "type": "FLOAT",
+          "link": 12,
+          "widget": {
+            "name": "scale_by"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            13
+          ],
+          "slot_index": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScaleBy",
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0"
+      },
+      "widgets_values": [
+        "bicubic",
+        1.0
+      ],
+      "widgets_values_named": {
+        "upscale_method": "bicubic",
+        "scale_by": 1.0
+      }
+    },
+    {
+      "id": 14,
+      "type": "GetImageSize",
+      "title": "Automatic width and height",
+      "pos": [
+        590,
+        1300
+      ],
+      "size": [
+        340,
+        90
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "links": [
+            14
+          ],
+          "slot_index": null
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": [
+            15
+          ],
+          "slot_index": null
+        },
+        {
+          "name": "batch_size",
+          "type": "INT",
+          "links": null,
+          "slot_index": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GetImageSize",
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
     }
   ],
   "links": [
@@ -691,6 +858,46 @@
       7,
       0,
       "IMAGE"
+    ],
+    [
+      11,
+      10,
+      0,
+      13,
+      0,
+      "IMAGE"
+    ],
+    [
+      12,
+      12,
+      0,
+      13,
+      1,
+      "FLOAT"
+    ],
+    [
+      13,
+      13,
+      0,
+      14,
+      0,
+      "IMAGE"
+    ],
+    [
+      14,
+      14,
+      0,
+      4,
+      4,
+      "INT"
+    ],
+    [
+      15,
+      14,
+      1,
+      4,
+      5,
+      "INT"
     ]
   ],
   "groups": [],
