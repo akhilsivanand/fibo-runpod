@@ -1,0 +1,22 @@
+{
+  "name": "Fibo 2 Edit Turbo ComfyUI",
+  "category": "NVIDIA",
+  "imageName": "ghcr.io/akhilsivanand/moss-comfyui:fibo-0.1.0",
+  "containerDiskInGb": 60,
+  "volumeInGb": 60,
+  "volumeMountPath": "/workspace",
+  "ports": [
+    "8888/http",
+    "22/tcp"
+  ],
+  "dockerEntrypoint": [],
+  "dockerStartCmd": [
+    "/opt/fibo/scripts/entrypoint.sh"
+  ],
+  "env": {
+    "FIBO_MODE": "pod"
+  },
+  "isPublic": false,
+  "isServerless": false,
+  "readme": "# Fibo 2 Edit Turbo ComfyUI\n\nDeploy \u2192 Connect \u2192 Fibo 2 ComfyUI \u2192 upload an image \u2192 describe an edit \u2192 Run.\n\nUse a CUDA 13-compatible GPU with at least 24 GB VRAM and a 60 GB container disk. Runpod supplies the Connect token. Three public model files (17.62 GB) download and verify on first use. Select persistent storage mounted at /workspace to retain models, workflows and images.\n\nThe native ComfyUI workflow uses Fibo 2 Edit Turbo INT8, a BF16 Qwen3-VL-4B text encoder and the FLUX.2 VAE, with 4 Euler/simple steps and CFG 1. No external image API key or prompt-enhancer model is required. Your files live in /workspace/ComfyUI.\n\nThe baked startup command is /opt/fibo/scripts/entrypoint.sh. The template preserves Runpod SSH and protects the editor with the per-Pod native Connect token.\n\nFibo weights are CC BY-NC 4.0: noncommercial use only without a separate Bria agreement. Licensing: https://platform.bria.ai/licensing/pricing?model=fibo-2\n\nSource and actual validation status: https://github.com/akhilsivanand/fibo-runpod\n"
+}

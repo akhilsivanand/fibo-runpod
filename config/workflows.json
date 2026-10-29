@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "default_preset": "edit",
+  "template_source": "fibo",
+  "allowed_loras": [],
+  "presets": {
+    "edit": {
+      "title": "Fibo 2 Edit Turbo",
+      "description": "Edit one uploaded image with a plain instruction or a structured VGL JSON caption. Four steps, INT8 diffusion, native ComfyUI nodes.",
+      "ui": "workflows/ui/fibo2-edit-turbo.json",
+      "api": "workflows/api/fibo2-edit-turbo.json",
+      "defaults": {
+        "width": 1024,
+        "height": 1024,
+        "steps": 4,
+        "cfg": 1
+      },
+      "nodes": {
+        "positive": "4",
+        "sampler": "5",
+        "load_image": "10",
+        "save": "7"
+      }
+    }
+  },
+  "ui_only": {}
+}

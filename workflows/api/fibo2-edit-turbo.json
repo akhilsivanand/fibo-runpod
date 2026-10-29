@@ -1,0 +1,127 @@
+{
+  "prompt": {
+    "1": {
+      "inputs": {
+        "unet_name": "fibo2_edit_turbo_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      },
+      "class_type": "UNETLoader",
+      "_meta": {
+        "title": "Fibo 2 Edit Turbo — INT8"
+      }
+    },
+    "2": {
+      "inputs": {
+        "clip_name": "qwen3vl_4b_bf16.safetensors",
+        "type": "fibo2",
+        "device": "default"
+      },
+      "class_type": "CLIPLoader",
+      "_meta": {
+        "title": "Qwen3-VL 4B — BF16"
+      }
+    },
+    "3": {
+      "inputs": {
+        "vae_name": "flux2-vae.safetensors"
+      },
+      "class_type": "VAELoader",
+      "_meta": {
+        "title": "FLUX.2 VAE"
+      }
+    },
+    "4": {
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "Change the main object's color to deep blue.",
+        "negative_prompt": "",
+        "vae": [
+          "3",
+          0
+        ],
+        "images.image_1": [
+          "10",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "batch_size": 1
+      },
+      "class_type": "TextEncodeFibo2",
+      "_meta": {
+        "title": "2. Describe the edit"
+      }
+    },
+    "5": {
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "4",
+          0
+        ],
+        "negative": [
+          "4",
+          1
+        ],
+        "latent_image": [
+          "4",
+          2
+        ],
+        "seed": 1234,
+        "steps": 4,
+        "cfg": 1,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      },
+      "class_type": "KSampler",
+      "_meta": {
+        "title": "3. Run — Turbo, 4 steps"
+      }
+    },
+    "6": {
+      "inputs": {
+        "samples": [
+          "5",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      },
+      "class_type": "VAEDecode",
+      "_meta": {
+        "title": "Decode edited image"
+      }
+    },
+    "7": {
+      "inputs": {
+        "images": [
+          "6",
+          0
+        ],
+        "filename_prefix": "fibo2-edit-turbo"
+      },
+      "class_type": "SaveImage",
+      "_meta": {
+        "title": "Edited image — saved automatically"
+      }
+    },
+    "10": {
+      "inputs": {
+        "image": ""
+      },
+      "class_type": "LoadImage",
+      "_meta": {
+        "title": "1. Upload the image to edit"
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+# Hash-pinned Python 3.11 Linux AMD64 delta over the immutable base.
+# The complete resulting dependency inventory is runtime.lock.
+--index-url https://pypi.org/simple
+
+comfyui-frontend-package==1.57.4 \
+    --hash=sha256:2c4472d5943ac18f9098af3565e319c6ffcc1eca5d873da5d62adc410f8f43bd
+comfyui-workflow-templates==0.11.97 \
+    --hash=sha256:f3529a492548621b80ef36d1e2a7d9817a5066cbdba28c0d2bfc3786f636bee5
+comfyui-embedded-docs==0.5.15 \
+    --hash=sha256:7167e13b0f328a80184e69cd705ea1ff28b8032065517e4ef8293b08d5e528ee
+comfy-aimdo==0.6.0 \
+    --hash=sha256:0f71c893f030303dea339fdf6e300414661dadabbb3f03d3e7c5b3c4a632c0fb \
+    --hash=sha256:336a96a0aabe690c5955813a7a3013db670a586910ade798cdac4b0864eb22ac
+comfy-kitchen==0.2.40 \
+    --hash=sha256:33bccd3099107742088a637abfff6367b4325356e11aaf9f0e691e2b1833ebb5 \
+    --hash=sha256:e5834f2ce993c8d5ea8c01650157c639742b5a28ecb0d95253777f31b5248099
+comfyui-workflow-templates-core==0.3.388 \
+    --hash=sha256:dbe40be62475b2c0bfe04ef34a8863bab7f6555b8dd9b73b4bf175e230a0d3f9
+comfyui-workflow-templates-json==0.1.123 \
+    --hash=sha256:fc321960cfc4f52dddc3ee111f33489b167eb7958028eb5b6a7f3fa8865a385e
+comfyui-workflow-templates-media-assets-02==0.1.24 \
+    --hash=sha256:ddc94f46da4987ec6e9a4ced6007eaaca126899beea6242ece786e49cd14b065

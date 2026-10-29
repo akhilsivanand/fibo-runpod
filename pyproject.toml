@@ -1,0 +1,10 @@
+[project]
+name = "fibo-runpod"
+version = "0.1.0"
+description = "Native Fibo 2 Edit Turbo for ComfyUI and Runpod"
+requires-python = ">=3.11,<3.12"
+license = "MIT"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

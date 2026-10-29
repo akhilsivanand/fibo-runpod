@@ -1,0 +1,94 @@
+name: Optional standalone registry build
+
+on:
+  workflow_dispatch:
+
+# The maintainer publishes normal Fibo releases via moss-runpod/fibo.yml into
+# the existing public moss-comfyui package using distinct fibo-* tags.
+# This optional standalone build creates a separate fibo-comfyui package; its
+# owner must configure public visibility before deploying it anonymously.
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: staging-container-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  container:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      DOCKER_BUILDKIT: '1'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Free hosted-runner space for CUDA layers
+        shell: bash
+        run: |
+          # This is the isolated hosted runner, not a user's workstation.
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc \
+            /opt/hostedtoolcache /usr/local/share/powershell /usr/local/.ghcup
+          sudo apt-get clean
+          docker image prune --all --force
+          df -h /
+
+      - name: Select immutable staging tag
+        id: image
+        shell: bash
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/fibo-comfyui"
+          printf 'reference=%s:staging-%s\n' "$image" "$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Build from the immutable dependency base
+        env:
+          IMAGE_REFERENCE: ${{ steps.image.outputs.reference }}
+        run: |
+          docker build --progress=plain --pull \
+            --build-arg "VERSION=staging-${GITHUB_SHA}" \
+            --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}" \
+            --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
+            --tag "$IMAGE_REFERENCE" .
+
+      - name: Check baked package imports on CPU
+        env:
+          IMAGE_REFERENCE: ${{ steps.image.outputs.reference }}
+        run: >-
+          docker run --rm --network none --no-healthcheck
+          --entrypoint /opt/venv/bin/python "$IMAGE_REFERENCE"
+          -m fibo_runtime.bootstrap --check-package
+
+      - name: Check native Fibo nodes, schemas and templates on CPU
+        env:
+          IMAGE_REFERENCE: ${{ steps.image.outputs.reference }}
+        run: >-
+          docker run --rm --network none --no-healthcheck
+          --entrypoint /opt/venv/bin/python "$IMAGE_REFERENCE"
+          /opt/fibo/scripts/smoke_container.py --timeout 120
+
+      - name: Sign in to GHCR for this repository
+        env:
+          GHCR_TOKEN: ${{ github.token }}
+        shell: bash
+        run: printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+
+      - name: Push the CPU-checked staging image
+        env:
+          IMAGE_REFERENCE: ${{ steps.image.outputs.reference }}
+        shell: bash
+        run: |
+          docker push "$IMAGE_REFERENCE"
+          digest=$(docker image inspect "$IMAGE_REFERENCE" --format '{{index .RepoDigests 0}}')
+          {
+            printf '### Fibo staging image\n\n`%s`\n\n`%s`\n\n' "$IMAGE_REFERENCE" "$digest"
+            printf 'CPU import/schema/template checks passed. GPU inference and deployment validation remain separate gates.\n'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove runner registry credentials
+        if: always()
+        run: docker logout ghcr.io

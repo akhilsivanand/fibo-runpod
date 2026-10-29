@@ -1,0 +1,22 @@
+{
+  "title": "Fibo 2 Edit Turbo API",
+  "description": "Native ComfyUI image editing with Fibo 2 Edit Turbo, four steps and CFG 1. Model use is noncommercial unless separately licensed by Bria.",
+  "type": "serverless",
+  "category": "image",
+  "config": {
+    "runsOn": "GPU",
+    "containerDiskInGb": 60,
+    "gpuCount": 1,
+    "gpuIds": "ADA_24",
+    "allowedCudaVersions": [
+      "13.0",
+      "13.2"
+    ],
+    "env": [
+      {
+        "key": "FIBO_MODE",
+        "value": "serverless"
+      }
+    ]
+  }
+}

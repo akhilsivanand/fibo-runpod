@@ -1,0 +1,4 @@
+# Small CPU-only test environment; runtime versions match runtime.lock.
+aiohttp==3.14.5
+Pillow==13.0.0
+pytest==8.4.2
