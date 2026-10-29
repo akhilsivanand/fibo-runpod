@@ -25,7 +25,7 @@ def main():
             if not path.is_file() or path.stat().st_size != model["size"]:
                 raise SystemExit("Prepare the base edit installation first: " + model["path"])
     result = prepare_models(ROOT / "config/creation-models.json", data)
-    source = ROOT / "workflows/ui/fibo2-create-dev.json"
+    source = ROOT / "workflows/optional/ui/fibo2-create-dev.json"
     content = source.read_bytes()
     json.loads(content)
     target = data / "user/default/workflows/FIBO" / source.name

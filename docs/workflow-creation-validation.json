@@ -68,5 +68,6 @@
     "This validates the optional live ComfyUI creation workflow, not a new container image or serverless creation preset.",
     "The immutable 0.1.0 image and release remain unchanged.",
     "One validation image is execution evidence, not a general quality or speed benchmark."
-  ]
+  ],
+  "source_layout_note": "After live validation, identical creation graph bytes were moved to workflows/optional/ui and workflows/optional/api so the default image catalog remains limited to automatically prepared assets."
 }
