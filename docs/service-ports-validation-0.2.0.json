@@ -1,0 +1,75 @@
+{
+  "package_version": "0.2.0",
+  "source_revision": "3379500332b7c0b4d91d6a93d3ea8be54fb01fc9",
+  "image": "ghcr.io/akhilsivanand/fibo-comfyui@sha256:184a777c6fa93a21eb14387bf1ca93866fb7b0513894149d9b171b4160a5e541",
+  "build_url": "https://github.com/akhilsivanand/fibo-runpod/actions/runs/40851409378",
+  "source_ci": "https://github.com/akhilsivanand/fibo-runpod/actions/runs/40851397533",
+  "source_tests_passed": 104,
+  "anonymous_image_verified": true,
+  "service_ports": {
+    "22": "SSH protocol banner passed",
+    "8080": "FileBrowser login and authenticated workspace access passed",
+    "8188": "ComfyUI token login/cookie/HTTP/template/POST/WebSocket passed",
+    "8888": "JupyterLab token authentication and workspace access passed",
+    "actual_entrypoint": true,
+    "comfyui_device": "cpu",
+    "foreign_origins_rejected": true,
+    "gateway_cookie_flags": "Secure HttpOnly SameSite=Strict Path=/",
+    "gateway_login_redirect": "303 to clean root URL",
+    "gateway_unauthenticated_status": 401,
+    "inference": "not_run",
+    "model_downloads": "bypassed_in_child_test_shim",
+    "raw_comfy_login_secrets_absent": true,
+    "status": "passed"
+  },
+  "template": {
+    "at": "2026-10-29T09:50:34.247488+00:00",
+    "template_id": "rxfq67i2yt",
+    "public": true,
+    "image": "ghcr.io/akhilsivanand/fibo-comfyui@sha256:184a777c6fa93a21eb14387bf1ca93866fb7b0513894149d9b171b4160a5e541",
+    "source_revision": "3379500332b7c0b4d91d6a93d3ea8be54fb01fc9",
+    "ports": [
+      "8188/http",
+      "8080/http",
+      "8888/http",
+      "22/tcp"
+    ],
+    "image_and_start_command_verified": true,
+    "readme_verified": true,
+    "connect_labels_submitted": [
+      {
+        "name": "ComfyUI",
+        "port": 8188
+      },
+      {
+        "name": "JupyterLab",
+        "port": 8888
+      },
+      {
+        "name": "FileBrowser",
+        "port": 8080
+      }
+    ],
+    "connect_labels_readback_available": true,
+    "authentication_preserved": true,
+    "connect_labels_verified": true
+  },
+  "inference_environment": {
+    "base_image": "ghcr.io/akhilsivanand/fibo-comfyui@sha256:7487d8ab9784c0f8b4176b21332e0a3f6c762053b597379d3a94e44dfcae46d2",
+    "comfyui_commit": "426f5eea52a7ece1dd599fff4cb6cd1f352ddd24",
+    "python_torch_cuda_and_native_dependencies_inherited": true,
+    "inference_locks_model_manifest_and_job_runner_match_gpu_tested_revision": true,
+    "jupyter_separate_environment": "/opt/jupyter",
+    "jupyterlab_version": "4.6.4",
+    "filebrowser_version": "2.63.23"
+  },
+  "validation_scope": "Real entrypoint, ComfyUI, JupyterLab, FileBrowser and SSH started inside the new image on CPU with only GPU checks and model downloads bypassed in the child test shim. No image inference was run in this port test. Historical GPU and live workflow validation remain separate.",
+  "cleanup": {
+    "user_requested_stopped_pod_deletion": true,
+    "deleted_at": "2026-10-29T09:50:38.424862+00:00",
+    "deletion_verified_by_404_and_pod_list": true,
+    "pod_was_not_started_or_restarted": true,
+    "attached_host_local_workspace_removed": true
+  },
+  "historical_gpu_report": "validation-0.1.0.json"
+}
