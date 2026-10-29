@@ -1,12 +1,11 @@
-name: Optional standalone registry build
+name: Build Fibo staging container
 
 on:
   workflow_dispatch:
 
-# The maintainer publishes normal Fibo releases via moss-runpod/fibo.yml into
-# the existing public moss-comfyui package using distinct fibo-* tags.
-# This optional standalone build creates a separate fibo-comfyui package; its
-# owner must configure public visibility before deploying it anonymously.
+# Dispatch this workflow on the reviewed Fibo source revision. The dedicated
+# fibo-comfyui package is public; verify each resulting manifest anonymously
+# before deploying the exact image digest to Runpod.
 
 permissions:
   contents: read

@@ -1,7 +1,7 @@
 {
   "name": "Fibo 2 Edit Turbo ComfyUI",
   "category": "NVIDIA",
-  "imageName": "ghcr.io/akhilsivanand/moss-comfyui:fibo-0.1.0",
+  "imageName": "ghcr.io/akhilsivanand/fibo-comfyui@sha256:7487d8ab9784c0f8b4176b21332e0a3f6c762053b597379d3a94e44dfcae46d2",
   "containerDiskInGb": 60,
   "volumeInGb": 60,
   "volumeMountPath": "/workspace",

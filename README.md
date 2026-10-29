@@ -53,8 +53,8 @@ python scripts/check_release.py
 docker build -t fibo-comfyui:local .
 ```
 
-The maintainer builds an exact Fibo source commit with [the shared registry workflow](https://github.com/akhilsivanand/moss-runpod/blob/main/.github/workflows/fibo.yml). Fibo images use distinct tags in the existing public package: `ghcr.io/akhilsivanand/moss-comfyui:fibo-staging-<fibo-commit>` for validation and `fibo-0.1.0` for the release. Existing MOSS release tags are preserved. The source repository remains `akhilsivanand/fibo-runpod`.
+The maintainer dispatches [this repository's build workflow](.github/workflows/container.yml) on the reviewed Fibo source revision. Images are published to the dedicated public package `ghcr.io/akhilsivanand/fibo-comfyui:staging-<commit>`; release promotion reuses the tested manifest.
 
-The build runs package imports and native workflow/schema checks in CPU containers before publishing a staging image. These checks do not establish successful GPU inference. A public release must also pass real image editing, Pod authentication and restart-preservation checks, and a fresh queue-worker edit against that exact image digest. `python scripts/check_release.py --publish` requires those dated results in `docs/validation.json`. The optional standalone workflow in this repository is manual only and requires separate registry visibility configuration.
+The staging image `ghcr.io/akhilsivanand/fibo-comfyui@sha256:7487d8ab9784c0f8b4176b21332e0a3f6c762053b597379d3a94e44dfcae46d2` passed CPU package imports and native workflow/schema checks and was verified anonymously pullable. These checks do not establish successful GPU inference. A public release must also pass real image editing, Pod authentication and restart-preservation checks, and a fresh queue-worker edit against that exact image digest. `python scripts/check_release.py --publish` requires those dated results in `docs/validation.json`. GPU validation is pending.
 
 See [release instructions](docs/release.md). Hub submission, automated test success, and Runpod's manual approval are separate states; no approval is implied by this source package.
