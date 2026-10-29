@@ -1,8 +1,8 @@
 {
   "id": "c7e5f360-6f27-458a-b4dc-3acf96c34c4e",
-  "revision": 1,
-  "last_node_id": 14,
-  "last_link_id": 15,
+  "revision": 2,
+  "last_node_id": 15,
+  "last_link_id": 16,
   "nodes": [
     {
       "id": 1,
@@ -253,7 +253,7 @@
         420
       ],
       "flags": {},
-      "order": 7,
+      "order": 8,
       "mode": 0,
       "showAdvanced": true,
       "inputs": [
@@ -382,7 +382,7 @@
         500
       ],
       "flags": {},
-      "order": 8,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -493,7 +493,7 @@
         50
       ],
       "flags": {},
-      "order": 9,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -560,7 +560,7 @@
         500
       ],
       "flags": {},
-      "order": 10,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -610,21 +610,21 @@
       "id": 11,
       "type": "MarkdownNote",
       "pos": [
-        590,
-        750
+        1010,
+        850
       ],
       "size": [
-        390,
-        450
+        700,
+        360
       ],
       "flags": {},
-      "order": 11,
+      "order": 12,
       "mode": 0,
       "inputs": [],
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "## Fibo 2 Edit Turbo\n\n1. Upload an image.\n2. Set **Scale**: **1** = input size, **0.5** = half width/height, **2** = double width/height.\n3. Describe the edit and Run.\n\nWidth and height come from your uploaded image automatically. Fibo rounds both dimensions down to multiples of 16 (minimum 16). Scaling keeps the input aspect ratio apart from that rounding. No resolution entry is needed.\n\nDefaults: scale **1**, **4 steps**, **CFG 1**, Euler / simple. Larger scale values require more GPU memory. The two collapsed helper nodes calculate the dimensions; you only need the Scale control.\n\nThis local workflow has no prompt-enhancer or external API dependency. It supports single-image edits.\n\nFibo model weights \u00a9 BRIA AI, **CC BY-NC 4.0**. Commercial use requires a separate Bria agreement. Qwen encoder and FLUX.2 VAE retain their component licenses. See THIRD_PARTY_NOTICES.txt.\n\nDerived from Comfy Org's MIT-licensed Fibo 2 Turbo template."
+        "## Fibo 2 Edit Turbo\n\n1. Upload an image.\n2. Set **Scale**: **1** = input size, **0.5** = half width/height, **2** = double width/height.\n3. Optionally enter **width** and **height** in **Resolution override**.\n4. Describe the edit and Run.\n\n**Width 0 + height 0:** use Scale.\n**Both dimensions set:** use that resolution instead of Scale.\n**Only one set:** calculate the other from the input aspect ratio.\n\nExample: width **1024**, height **1024** restores the original square output size. Leave the override's method and crop settings at their defaults; it calculates dimensions only. Fibo always receives the original uploaded image.\n\nFibo rounds dimensions down to multiples of 16. A changed aspect ratio center-crops the reference for the requested output. Larger resolutions use more GPU memory.\n\nDefaults: scale **1**, override **0 \u00d7 0**, **4 steps**, **CFG 1**, Euler / simple. No prompt-enhancer or external API dependency.\n\nFibo weights \u00a9 BRIA AI, **CC BY-NC 4.0**; commercial use requires a separate Bria agreement. Derived from Comfy Org's MIT-licensed template. See THIRD_PARTY_NOTICES.txt."
       ]
     },
     {
@@ -736,13 +736,13 @@
       "flags": {
         "collapsed": true
       },
-      "order": 6,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 13
+          "link": 16
         }
       ],
       "outputs": [
@@ -776,6 +776,58 @@
       },
       "widgets_values": [],
       "widgets_values_named": {}
+    },
+    {
+      "id": 15,
+      "type": "ImageScale",
+      "title": "Resolution override (0 + 0 = use Scale)",
+      "pos": [
+        590,
+        750
+      ],
+      "size": [
+        390,
+        170
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            16
+          ],
+          "slot_index": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0"
+      },
+      "widgets_values": [
+        "bicubic",
+        0,
+        0,
+        "disabled"
+      ],
+      "widgets_values_named": {
+        "upscale_method": "bicubic",
+        "width": 0,
+        "height": 0,
+        "crop": "disabled"
+      },
+      "color": "#322",
+      "bgcolor": "#533"
     }
   ],
   "links": [
@@ -879,7 +931,7 @@
       13,
       13,
       0,
-      14,
+      15,
       0,
       "IMAGE"
     ],
@@ -898,6 +950,14 @@
       4,
       5,
       "INT"
+    ],
+    [
+      16,
+      15,
+      0,
+      14,
+      0,
+      "IMAGE"
     ]
   ],
   "groups": [],

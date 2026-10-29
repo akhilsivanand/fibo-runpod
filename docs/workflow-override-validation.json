@@ -1,0 +1,44 @@
+{
+  "validated_at": "2026-10-29T08:46:11.036112+00:00",
+  "scope": "Live edit workflow update; immutable 0.1.0 image remains unchanged.",
+  "node": "ImageScale",
+  "default_override": {
+    "width": 0,
+    "height": 0
+  },
+  "semantics": {
+    "zero_zero": "Use input dimensions multiplied by Scale.",
+    "both_nonzero": "Use explicit width and height instead of Scale.",
+    "one_nonzero": "Derive the other dimension from the image aspect ratio.",
+    "rounding": "Fibo floors final dimensions to multiples of 16.",
+    "changed_aspect_ratio": "Fibo center-crops the original reference to the requested output aspect ratio."
+  },
+  "reference_image_path_unchanged": true,
+  "default_scale": 1,
+  "ui_sha256": "4757b75e75106351a06d33d34504091ee052299bff25022fd624e5f5fdf618c2",
+  "api_sha256": "b58b3d61fbee954a6f49a6fbcf1fd37700c183c365f4f80a53c4e8faa5a21b48",
+  "source_tests_passed": 21,
+  "browser_native_export_matches": true,
+  "default_override_widgets_verified": true,
+  "test": {
+    "input_width": 512,
+    "input_height": 512,
+    "scale": 1.5,
+    "override_width": 768,
+    "override_height": 512,
+    "output_width": 768,
+    "output_height": 512,
+    "seed": 729108,
+    "steps": 4,
+    "cfg": 1,
+    "completed": true,
+    "fresh_sampler_execution": true,
+    "image_sha256": "f706d19f4bbd9c599ba31136474f07188e951a069a1a6225fe48bdd1909dbc40",
+    "server_execution_seconds": 2.258,
+    "jobs_submitted": 1
+  },
+  "visual_validation": "Green mug and handle, beige background and brown tabletop retained in the requested rectangular result.",
+  "restart_performed": false,
+  "persistent_workflow_saved": true,
+  "original_workflow_backup_retained": true
+}

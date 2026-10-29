@@ -159,12 +159,28 @@
       "class_type": "GetImageSize",
       "inputs": {
         "image": [
-          "13",
+          "15",
           0
         ]
       },
       "_meta": {
         "title": "Automatic width and height"
+      }
+    },
+    "15": {
+      "class_type": "ImageScale",
+      "inputs": {
+        "image": [
+          "13",
+          0
+        ],
+        "upscale_method": "bicubic",
+        "width": 0,
+        "height": 0,
+        "crop": "disabled"
+      },
+      "_meta": {
+        "title": "Resolution override (0 + 0 = use Scale)"
       }
     }
   }
