@@ -1,0 +1,4 @@
+# Isolated JupyterLab environment; never installed into the inference venv.
+# Official PyPI stable release verified on 2026-10-29:
+# https://pypi.org/project/jupyterlab/4.6.4/
+jupyterlab==4.6.4

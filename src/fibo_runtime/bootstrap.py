@@ -18,6 +18,7 @@ from .gateway import auth_from_environment, create_app
 from .paths import DEFAULT_DATA_ROOT, expose_persistent_models
 from .workflows import install_workflows, atomic_write
 from .filebrowser import start_filebrowser
+from .jupyter import start_jupyter
 
 
 def check_package(root, comfy_root):
@@ -92,6 +93,7 @@ async def serve_workspace(root, comfy_root, data_root, mode, model_data_root):
         loop = asyncio.get_running_loop()
         try:
             if mode == 'pod':
+                children.append(await start_jupyter(data_root))
                 children.append(await start_filebrowser(data_root))
             await asyncio.to_thread(check_gpu)
             for name in ('models', 'input', 'output', 'temp', 'user', 'cache', 'custom_nodes'):
@@ -116,7 +118,7 @@ async def serve_workspace(root, comfy_root, data_root, mode, model_data_root):
             # and model directories follow --base-directory on the volume.
             atomic_write(extra, ('fibo_bundled:\n  custom_nodes: ' + json.dumps(str(comfy_root / 'custom_nodes')) + '\n').encode())
             env = os.environ.copy()
-            for secret in ('FIBO_PASSWORD', 'JUPYTER_PASSWORD', 'FILEBROWSER_PASSWORD', 'JUPYTER_DISABLE_AUTH'):
+            for secret in ('FIBO_PASSWORD', 'JUPYTER_PASSWORD', 'JUPYTER_TOKEN', 'FILEBROWSER_PASSWORD', 'JUPYTER_DISABLE_AUTH'):
                 env.pop(secret, None)
             env.update(FIBO_ROOT=str(root), FIBO_DATA_DIR=str(data_root), COMFY_URL='http://127.0.0.1:8189')
             command = [sys.executable, '-u', str(comfy_root / 'main.py'), '--listen', '127.0.0.1', '--port', '8189',

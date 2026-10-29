@@ -64,7 +64,7 @@ Supply your own source image as raw base64, without a data URL prefix. Input fil
 
 ## Build and validation
 
-The 0.2.0 Dockerfile derives from the immutable, GPU-tested Fibo 0.1.0 image. ComfyUI, PyTorch/CUDA and the Python dependency inventory remain byte-for-byte inherited; the derivative updates workflows and the standard service layout and installs a checksum-pinned FileBrowser binary. The full Python inventory is `requirements/runtime.lock`; the original eight-package delta remains documented in `requirements/upgrade.lock`. Models download at runtime.
+The 0.2.0 Dockerfile derives from the immutable, GPU-tested Fibo 0.1.0 image. ComfyUI, PyTorch/CUDA and the Python dependency inventory remain byte-for-byte inherited; the derivative updates workflows and the standard service layout and installs a checksum-pinned FileBrowser binary and an isolated, fully hash-locked JupyterLab environment at `/opt/jupyter`. The full Python inventory is `requirements/runtime.lock`; the original eight-package delta remains documented in `requirements/upgrade.lock`. Models download at runtime.
 
 ```bash
 python -m pip install -r requirements/test.txt

@@ -2,7 +2,7 @@
 """Exercise the built image's real Pod services on CPU, without model downloads.
 
 Run only in a fresh, disposable container. This check starts the actual Pod
-entrypoint, Runpod base initialization, JupyterLab, FileBrowser and ComfyUI.
+entrypoint, Runpod SSH initialization, supervised JupyterLab, FileBrowser and ComfyUI.
 The child-only shim bypasses GPU/model preparation, starts ComfyUI in CPU/offline
 mode, and accepts native node readiness without downloaded weights. No prompt
 is executed. This verifies service ports, not GPU inference.
@@ -34,7 +34,7 @@ from yarl import URL
 
 PORTS = (22, 8080, 8188, 8189, 8888)
 MAX_BODY = 4 * 1024 * 1024
-RAW_SECRET_KEYS = ("FIBO_PASSWORD", "JUPYTER_PASSWORD", "FILEBROWSER_PASSWORD")
+RAW_SECRET_KEYS = ("FIBO_PASSWORD", "JUPYTER_PASSWORD", "JUPYTER_TOKEN", "FILEBROWSER_PASSWORD")
 
 
 class PortCheckError(RuntimeError):
@@ -183,7 +183,7 @@ async def _gateway_login(session, token):
 
 async def _services_ready(process, workspace, token, timeout):
     deadline = time.monotonic() + timeout
-    relative_probe = quote(workspace.name + "/port-check.txt", safe="/")
+    relative_probe = "port-check.txt"
     jupyter = "http://127.0.0.1:8888/api/contents/" + relative_probe + "?content=1"
     auth = {"Authorization": "token " + token}
     last_stage = "entrypoint startup"

@@ -19,5 +19,5 @@ jobs:
       - run: python -m pip install -r requirements/test.txt
       - run: python -m pytest -q
       - run: python scripts/check_release.py
-      - run: bash -n scripts/entrypoint.sh scripts/base-ready.sh scripts/install_filebrowser.sh
+      - run: bash -n scripts/entrypoint.sh scripts/base-ready.sh scripts/install_filebrowser.sh scripts/install_jupyter.sh
       - run: docker build --check .

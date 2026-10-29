@@ -136,6 +136,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
+JupyterLab
+----------
+Project Jupyter contributors: https://github.com/jupyterlab/jupyterlab
+JupyterLab 4.6.4 is BSD-3-Clause licensed. Its isolated environment and all
+transitive wheel hashes are pinned in requirements/jupyter.lock. Installed
+components retain their individual license metadata.
+
 FileBrowser
 -----------
 FileBrowser contributors: https://github.com/filebrowser/filebrowser

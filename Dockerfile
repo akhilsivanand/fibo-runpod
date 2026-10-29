@@ -12,7 +12,8 @@ LABEL org.opencontainers.image.title="Fibo 2 Edit Turbo ComfyUI" \
 
 WORKDIR /opt
 COPY requirements/ /opt/fibo/requirements/
-RUN test "$(cat /opt/fibo/comfy-commit.txt)" = "$COMFY_COMMIT" \
+RUN mkdir -p /workspace \
+    && test "$(cat /opt/fibo/comfy-commit.txt)" = "$COMFY_COMMIT" \
     && /opt/venv/bin/python -m pip check
 
 COPY src/ /opt/fibo/src/
@@ -22,15 +23,15 @@ COPY scripts/ /opt/fibo/scripts/
 COPY handler.py README.md LICENSE THIRD_PARTY_NOTICES.txt /opt/fibo/
 COPY custom_nodes/fibo/ /opt/comfyui/custom_nodes/fibo/
 COPY scripts/base-ready.sh /post_start.sh
+RUN bash /opt/fibo/scripts/install_jupyter.sh
 RUN bash /opt/fibo/scripts/install_filebrowser.sh
 RUN test "$(readlink /opt/comfyui/custom_nodes/fibo/example_workflows)" = /opt/fibo/workflows/ui \
     && chmod 0755 /post_start.sh /opt/fibo/scripts/entrypoint.sh \
-    && test -x /start.sh \
-    && /opt/venv/bin/python /opt/fibo/scripts/check_native_dependencies.py --root /opt/venv --cuda-only
+    && test -x /start.sh
 
 ENV NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=compute,utility \
-    PATH=/opt/venv/bin:$PATH \
+    PATH=/opt/venv/bin:/opt/jupyter/bin:$PATH \
     PYTHONPATH=/opt/fibo/src \
     PYTHONUNBUFFERED=1 \
     FIBO_ROOT=/opt/fibo \

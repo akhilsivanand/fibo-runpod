@@ -28,6 +28,7 @@ REQUIRED = (
     "src/fibo_runtime/bootstrap.py", "src/fibo_runtime/jobs.py",
     "custom_nodes/fibo/__init__.py", "scripts/entrypoint.sh",
     "src/fibo_runtime/filebrowser.py", "scripts/install_filebrowser.sh", "scripts/check_service_ports.py",
+    "src/fibo_runtime/jupyter.py", "scripts/install_jupyter.sh", "requirements/jupyter.lock",
 )
 HEX40 = re.compile(r"[0-9a-f]{40}")
 HEX64 = re.compile(r"[0-9a-f]{64}")

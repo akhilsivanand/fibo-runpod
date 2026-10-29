@@ -145,7 +145,7 @@ def test_gateway_auth_configuration_and_bounded_signed_sessions(monkeypatch):
     assert not session_authorized('invalid', PASSWORD, now=1000)
 
 
-def test_entrypoint_passes_only_jupyter_token_to_base_service(tmp_path):
+def test_entrypoint_keeps_service_tokens_in_supervisor(tmp_path):
     import os
     import shlex
     import subprocess
@@ -183,7 +183,7 @@ Path(os.environ['FIBO_TEST_PARENT_RECORD']).write_text(json.dumps({key: key in o
     result = subprocess.run(['bash', str(entrypoint)], env=environment, capture_output=True, text=True, timeout=5)
     assert result.returncode == 0, result.stderr
     assert json.loads((tmp_path / 'base.json').read_text()) == {
-        'FIBO_PASSWORD': False, 'JUPYTER_PASSWORD': True, 'JUPYTER_DISABLE_AUTH': False}
+        'FIBO_PASSWORD': False, 'JUPYTER_PASSWORD': False, 'JUPYTER_DISABLE_AUTH': False}
     assert json.loads((tmp_path / 'parent.json').read_text()) == {
         'FIBO_PASSWORD': True, 'JUPYTER_PASSWORD': True, 'JUPYTER_DISABLE_AUTH': True}
 
