@@ -1,0 +1,63 @@
+{
+  "observed_at": "2026-10-29T07:08:12.281783+00:00",
+  "version": "0.1.0",
+  "tested_runtime_revision": "d70fdcc55c1354e8b10cb2e97f926acdf31a23c4",
+  "release_packaging_revision": "8b8e40d514480760c2c4cc4aaf8557a108c43313",
+  "image": {
+    "reference": "ghcr.io/akhilsivanand/fibo-comfyui@sha256:7487d8ab9784c0f8b4176b21332e0a3f6c762053b597379d3a94e44dfcae46d2",
+    "tag": "ghcr.io/akhilsivanand/fibo-comfyui:0.1.0",
+    "anonymous_digest_verified": true,
+    "promotion_workflow": "https://github.com/akhilsivanand/fibo-runpod/actions/runs/40832984575"
+  },
+  "source_checks": "https://github.com/akhilsivanand/fibo-runpod/actions/runs/40832908104",
+  "release": {
+    "url": "https://github.com/akhilsivanand/fibo-runpod/releases/tag/v0.1.0",
+    "archive": "fibo-runpod-0.1.0.zip",
+    "sha256": "2a26feee8fdfc5ecb2b91ede9cae2aff4d2e5760e47f6ead52bf9b09125200de",
+    "file_count": 55,
+    "anonymous_download_matches": true
+  },
+  "pod_template": {
+    "url": "https://console.runpod.io/deploy?template=rxfq67i2yt&type=gpu",
+    "public": true,
+    "image_and_start_command_verified": true,
+    "native_connect_and_ssh_enabled": true,
+    "readme_verified": true,
+    "registry_credentials_v2": null,
+    "community_catalog_note": "Current API returns at most 100 templates; this template was not in that slice. Public visibility was verified through direct template metadata."
+  },
+  "validation": {
+    "report": "validation.json",
+    "browser_edit_completed": true,
+    "fresh_queue_worker_edit_completed": true,
+    "restart_preservation_verified": true,
+    "post_restart_browser_verified": true,
+    "temporary_queue_endpoint_deleted": true
+  },
+  "hub": {
+    "url": "https://console.runpod.io/hub/listing/akhilsivanand/fibo-runpod",
+    "submission_accepted": true,
+    "listing_id": "cmvt784l3000007jm5oltco53",
+    "build_id": "cmvt784ma000107jm7ikkeh6h",
+    "source_revision": "8b8e40d514480760c2c4cc4aaf8557a108c43313",
+    "tag": "v0.1.0",
+    "build_state": "FAILED",
+    "started_at": "2026-10-29T07:05:18.348Z",
+    "completed_at": "2026-10-29T07:05:21.047Z",
+    "failure_stage": "GitHub source archive download, before Dockerfile execution",
+    "source_download_http_status": 401,
+    "image_produced": false,
+    "automated_test_started": false,
+    "listed": false,
+    "listed_release": null,
+    "manual_approval": false,
+    "anonymous_exact_source_archive_http_status": 200,
+    "underlying_cause": "Not established; the same public archive is anonymously accessible.",
+    "next_step": "Runpod needs to investigate the Hub GitHub source authorization failure. The MOSS listing previously reported the same failure despite user-reported reconnection and support-advised retests."
+  },
+  "notes": [
+    "Publication observations were recorded after the immutable v0.1.0 source package was published.",
+    "Public Pod deployment and the tested registry image are usable independently of the failed Hub build.",
+    "The Fibo Pod was left running as requested; its private access details are not included here."
+  ]
+}
