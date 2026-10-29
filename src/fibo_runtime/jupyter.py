@@ -73,7 +73,7 @@ def prepare_jupyter(data_root, *, root=None, binary=JUPYTER_BINARY, environ=None
                "c.ServerApp.trust_xheaders = True\n"
                f"c.ServerApp.root_dir = {str(served_root)!r}\n"
                "c.ServerApp.open_browser = False\n"
-               "c.ServerApp.log_level = 'WARNING'\n"
+               "c.ServerApp.log_level = 30\n"
                "c.IdentityProvider.token = os.environ['JUPYTER_TOKEN']\n")
     if public_origin is not None:
         content += f"c.ServerApp.allow_origin = {public_origin!r}\n"

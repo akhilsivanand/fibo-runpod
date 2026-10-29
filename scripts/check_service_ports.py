@@ -188,7 +188,7 @@ async def _services_ready(process, workspace, token, timeout):
     auth = {"Authorization": "token " + token}
     last_stage = "entrypoint startup"
     cookie_jar = aiohttp.CookieJar(unsafe=True,
-        treat_as_secure_origin=[URL("http://127.0.0.1:8188")])
+        treat_as_secure_origin=[URL("http://127.0.0.1:8188"), URL("ws://127.0.0.1:8188")])
     async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=4),
                                     cookie_jar=cookie_jar, trust_env=False) as session:
         while time.monotonic() < deadline:

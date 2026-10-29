@@ -56,7 +56,7 @@ def test_actual_config_enables_token_auth_on_workspace_and_standard_port(tmp_pat
     assert config.ServerApp.ip == "0.0.0.0" and config.ServerApp.port == 8888
     assert config.ServerApp.port_retries == 0 and config.ServerApp.allow_root is True
     assert config.ServerApp.root_dir == str(data.parent)
-    assert config.ServerApp.open_browser is False and config.ServerApp.log_level == "WARNING"
+    assert config.ServerApp.open_browser is False and config.ServerApp.log_level == 30
     assert config.IdentityProvider.token == TOKEN
     # Rotating the environment token does not require writing a token to disk.
     monkeypatch.setenv("JUPYTER_TOKEN", "replacement-provider-token")
