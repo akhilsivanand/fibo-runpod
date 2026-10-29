@@ -6,6 +6,8 @@
   "volumeInGb": 60,
   "volumeMountPath": "/workspace",
   "ports": [
+    "8188/http",
+    "8080/http",
     "8888/http",
     "22/tcp"
   ],
@@ -18,5 +20,5 @@
   },
   "isPublic": true,
   "isServerless": false,
-  "readme": "# Fibo 2 Edit Turbo ComfyUI\n\nDeploy \u2192 Connect \u2192 Fibo 2 ComfyUI \u2192 upload an image \u2192 describe an edit \u2192 Run.\n\nUse a CUDA 13-compatible GPU with at least 24 GB VRAM and a 60 GB container disk. Runpod supplies the Connect token. Three public model files (17.62 GB) download and verify on first use. Select persistent storage mounted at /workspace to retain models, workflows and images.\n\nThe native ComfyUI workflow uses Fibo 2 Edit Turbo INT8, a BF16 Qwen3-VL-4B text encoder and the FLUX.2 VAE, with 4 Euler/simple steps and CFG 1. No external image API key or prompt-enhancer model is required. Your files live in /workspace/ComfyUI.\n\nThe baked startup command is /opt/fibo/scripts/entrypoint.sh. The template preserves Runpod SSH and protects the editor with the per-Pod native Connect token.\n\nFibo weights are CC BY-NC 4.0: noncommercial use only without a separate Bria agreement. Licensing: https://platform.bria.ai/licensing/pricing?model=fibo-2\n\nSource and actual validation status: https://github.com/akhilsivanand/fibo-runpod\n\nValidated on 29 October 2026 with RTX 4090 (24 GB class): real 1024 x 1024 edits in the browser and a fresh queue worker, native Connect authentication, and restart preservation. Dated evidence: https://github.com/akhilsivanand/fibo-runpod/blob/main/docs/validation.json\n"
+  "readme": "# Fibo 2 ComfyUI\n\nRunpod standard ports:\n- 8188: ComfyUI and model preparation progress.\n- 8888: JupyterLab, rooted at /workspace; use Runpod Connect.\n- 8080: FileBrowser, rooted at /workspace.\n- 22: SSH.\n\nDeploy \u2192 Connect \u2192 ComfyUI (8188) \u2192 upload an image \u2192 describe an edit \u2192 Run. ComfyUI keeps per-Pod login protection: open 8188 and enter the Jupyter token from Runpod Connect once. Set FIBO_PASSWORD to use Basic authentication instead. JupyterLab keeps its normal token login on 8888. FileBrowser username is admin; its initial password is FILEBROWSER_PASSWORD when set, otherwise the Jupyter token used on its first boot. FileBrowser retains its password in persistent storage.\n\nUse a CUDA 13-compatible GPU with at least 24 GB VRAM, a 60 GB container disk and persistent storage at /workspace. Three SHA256-verified edit model files total 17.62 GB. User files live in /workspace/ComfyUI. The edit workflow supports Scale and optional width/height overrides. The optional Dev creation installer adds one 8.41 GB checkpoint and a text-to-image workflow.\n\nThe explicit startup command is /opt/fibo/scripts/entrypoint.sh. It initializes the usual SSH and Jupyter services and supervises FileBrowser and ComfyUI. The model backend stays private on loopback port 8189.\n\nFibo weights are CC BY-NC 4.0. Commercial use requires a separate Bria agreement: https://platform.bria.ai/licensing/pricing?model=fibo-2\n\nSource, image identity and dated validation scope: https://github.com/akhilsivanand/fibo-runpod\n"
 }

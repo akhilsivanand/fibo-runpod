@@ -12,7 +12,7 @@ from aiohttp.test_utils import TestClient, TestServer
 
 from fibo_runtime.gateway import (create_app, authorized, normalize_origin,
                                  public_origin_from_environment, origin_allowed,
-                                 auth_from_environment, SESSION_COOKIE, SESSION_TTL,
+                                 auth_from_environment, GatewayAuth, SESSION_COOKIE, SESSION_TTL,
                                  session_cookie, session_authorized)
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -65,6 +65,8 @@ def test_public_origin_configuration_is_explicit_and_validated(monkeypatch):
 
 def test_runpod_rewritten_host_allows_own_browser_post_and_websocket(monkeypatch):
     monkeypatch.delenv('FIBO_PUBLIC_ORIGIN', raising=False)
+    monkeypatch.delenv('FIBO_PASSWORD', raising=False)
+    monkeypatch.setenv('JUPYTER_PASSWORD', 'separate-jupyter-token')
     monkeypatch.setenv('RUNPOD_POD_ID', POD_ID)
 
     async def run():
@@ -112,14 +114,14 @@ def test_unicode_password_and_invalid_login():
     assert not authorized(bad_user, secret)
 
 
-def test_native_auth_configuration_and_bounded_signed_sessions(monkeypatch):
+def test_gateway_auth_configuration_and_bounded_signed_sessions(monkeypatch):
     monkeypatch.delenv('FIBO_PASSWORD', raising=False)
     monkeypatch.delenv('JUPYTER_PASSWORD', raising=False)
-    with pytest.raises(ValueError, match='Runpod Connect authentication is missing'):
+    with pytest.raises(ValueError, match='ComfyUI authentication is missing'):
         auth_from_environment()
     monkeypatch.setenv('JUPYTER_PASSWORD', PASSWORD)
     auth = auth_from_environment()
-    assert (auth.mechanism, auth.secret, auth.port) == ('token', PASSWORD, 8888)
+    assert auth == GatewayAuth('token', PASSWORD, 8188)
     monkeypatch.setenv('FIBO_PASSWORD', 'legacy-unique-password')
     assert auth_from_environment().mechanism == 'basic'
     assert auth_from_environment().port == 8188
@@ -131,7 +133,7 @@ def test_native_auth_configuration_and_bounded_signed_sessions(monkeypatch):
     monkeypatch.setenv('JUPYTER_PASSWORD', '{{ RUNPOD_SECRET_missing_token }}')
     with pytest.raises(ValueError, match='unresolved Runpod Secret'):
         auth_from_environment()
-    assert auth_from_environment('serverless').port == 8188
+    assert auth_from_environment('serverless') == GatewayAuth('none', '', 8188)
 
     value = session_cookie(PASSWORD, now=1000)
     assert session_authorized(value, PASSWORD, now=1000)
@@ -143,7 +145,7 @@ def test_native_auth_configuration_and_bounded_signed_sessions(monkeypatch):
     assert not session_authorized('invalid', PASSWORD, now=1000)
 
 
-def test_entrypoint_keeps_login_secrets_only_in_gateway_parent(tmp_path):
+def test_entrypoint_passes_only_jupyter_token_to_base_service(tmp_path):
     import os
     import shlex
     import subprocess
@@ -181,18 +183,74 @@ Path(os.environ['FIBO_TEST_PARENT_RECORD']).write_text(json.dumps({key: key in o
     result = subprocess.run(['bash', str(entrypoint)], env=environment, capture_output=True, text=True, timeout=5)
     assert result.returncode == 0, result.stderr
     assert json.loads((tmp_path / 'base.json').read_text()) == {
-        'FIBO_PASSWORD': False, 'JUPYTER_PASSWORD': False, 'JUPYTER_DISABLE_AUTH': False}
+        'FIBO_PASSWORD': False, 'JUPYTER_PASSWORD': True, 'JUPYTER_DISABLE_AUTH': False}
     assert json.loads((tmp_path / 'parent.json').read_text()) == {
         'FIBO_PASSWORD': True, 'JUPYTER_PASSWORD': True, 'JUPYTER_DISABLE_AUTH': True}
 
 
-def test_native_connect_token_exchange_preparation_and_cookie_transport(monkeypatch):
+def test_gateway_form_login_keeps_token_out_of_urls_and_checks_origin(monkeypatch):
     monkeypatch.delenv('FIBO_PASSWORD', raising=False)
     monkeypatch.delenv('FIBO_PUBLIC_ORIGIN', raising=False)
     monkeypatch.setenv('JUPYTER_PASSWORD', PASSWORD)
     monkeypatch.setenv('RUNPOD_POD_ID', POD_ID)
-    native_origin = 'https://' + POD_ID + '-8888.proxy.runpod.net'
-    assert public_origin_from_environment(8888) == ('https', POD_ID + '-8888.proxy.runpod.net', 443)
+
+    async def run():
+        state = {'ready': False, 'phase': 'downloading'}
+        async with TestClient(TestServer(create_app(state, ROOT))) as client:
+            response = await client.get('/')
+            form = await response.text()
+            assert response.status == 401
+            assert '<form method="post" action="/fibo/login">' in form
+            assert 'name="token" type="password"' in form
+            assert PASSWORD not in form and '?token=' not in form
+            assert response.headers['Cache-Control'] == 'no-store'
+            assert response.headers['Referrer-Policy'] == 'no-referrer'
+            assert "form-action 'self'" in response.headers['Content-Security-Policy']
+            assert 'Set-Cookie' not in response.headers
+            headers = {'Origin': POD_ORIGIN}
+            response = await client.post('/fibo/login', data={'token': PASSWORD},
+                                         headers={'Origin': 'https://attacker.example'}, allow_redirects=False)
+            assert response.status == 403 and 'Set-Cookie' not in response.headers
+            for data in ({'token': 'wrong-token'}, [('token', PASSWORD), ('token', PASSWORD)]):
+                response = await client.post('/fibo/login', data=data, headers=headers, allow_redirects=False)
+                assert response.status == 401 and 'Set-Cookie' not in response.headers
+                assert PASSWORD not in await response.text()
+            response = await client.post('/fibo/login', data=b'token=' + b'x' * 8192,
+                                         headers={**headers, 'Content-Type': 'application/x-www-form-urlencoded'},
+                                         allow_redirects=False)
+            assert response.status == 413 and 'Set-Cookie' not in response.headers
+
+            async def oversized_chunks():
+                yield b'token=' + b'x' * 4096
+                yield b'x' * 4096
+            response = await client.post('/fibo/login', data=oversized_chunks(),
+                                         headers={**headers, 'Content-Type': 'application/x-www-form-urlencoded'},
+                                         allow_redirects=False)
+            assert response.status == 413 and 'Set-Cookie' not in response.headers
+            response = await client.post('/fibo/login', data={'token': PASSWORD},
+                                         headers=headers, allow_redirects=False)
+            assert response.status == 303 and response.headers['Location'] == '/'
+            assert PASSWORD not in await response.text()
+            assert response.headers['Cache-Control'] == 'no-store'
+            assert response.headers['Referrer-Policy'] == 'no-referrer'
+            cookie = response.cookies[SESSION_COOKIE]
+            assert cookie['secure'] and cookie['httponly'] and cookie['samesite'] == 'Strict'
+            assert cookie['path'] == '/' and not cookie['domain']
+            assert PASSWORD not in cookie.value
+            # TestServer is HTTP; supply the HTTPS-only cookie explicitly.
+            response = await client.get('/fibo/status', headers={
+                'Cookie': SESSION_COOKIE + '=' + cookie.value, 'Origin': POD_ORIGIN})
+            assert response.status == 200 and (await response.json())['ready'] is False
+    asyncio.run(run())
+
+
+def test_explicit_token_exchange_preparation_and_cookie_transport(monkeypatch):
+    monkeypatch.delenv('FIBO_PASSWORD', raising=False)
+    monkeypatch.delenv('FIBO_PUBLIC_ORIGIN', raising=False)
+    monkeypatch.setenv('JUPYTER_PASSWORD', PASSWORD)
+    monkeypatch.setenv('RUNPOD_POD_ID', POD_ID)
+    native_origin = POD_ORIGIN
+    assert public_origin_from_environment(8188) == ('https', POD_ID + '-8188.proxy.runpod.net', 443)
 
     async def run():
         state = {'ready': False, 'phase': 'downloading', 'detail': 'Private workspace details'}
@@ -209,7 +267,8 @@ def test_native_connect_token_exchange_preparation_and_cookie_transport(monkeypa
         upstream = web.Application()
         upstream.router.add_route('*', '/{path:.*}', endpoint)
         async with TestServer(upstream) as server:
-            app = create_app(state, ROOT, upstream=str(server.make_url('')).rstrip('/'))
+            app = create_app(state, ROOT, upstream=str(server.make_url('')).rstrip('/'),
+                             auth=GatewayAuth('token', PASSWORD, 8188))
             async with TestClient(TestServer(app)) as client:
                 for path in ('/', '/lab', '/api/status', '/ws', '/object_info'):
                     assert (await client.get(path, allow_redirects=False)).status == 401
@@ -256,7 +315,7 @@ def test_native_connect_token_exchange_preparation_and_cookie_transport(monkeypa
                 # TestServer is HTTP, so supply the Secure browser cookie
                 # explicitly; production browsers send it over the HTTPS proxy.
                 headers = {'Cookie': SESSION_COOKIE + '=' + cookie.value,
-                           'Host': '10.2.3.4:8888', 'Origin': native_origin}
+                           'Host': '10.2.3.4:8188', 'Origin': native_origin}
                 response = await client.get('/lab?editor=1', headers=headers, allow_redirects=False)
                 assert response.status == 303 and response.headers['Location'] == '/?editor=1'
                 assert (await client.get('/fibo/status', headers=headers)).status == 200

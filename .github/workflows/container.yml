@@ -70,6 +70,14 @@ jobs:
           --entrypoint /opt/venv/bin/python "$IMAGE_REFERENCE"
           /opt/fibo/scripts/smoke_container.py --timeout 120
 
+      - name: Check standard Pod service ports on CPU
+        env:
+          IMAGE_REFERENCE: ${{ steps.image.outputs.reference }}
+        run: >-
+          docker run --rm --network none --no-healthcheck
+          --entrypoint /opt/venv/bin/python "$IMAGE_REFERENCE"
+          /opt/fibo/scripts/check_service_ports.py --timeout 180
+
       - name: Sign in to GHCR for this repository
         env:
           GHCR_TOKEN: ${{ github.token }}
@@ -85,7 +93,7 @@ jobs:
           digest=$(docker image inspect "$IMAGE_REFERENCE" --format '{{index .RepoDigests 0}}')
           {
             printf '### Fibo staging image\n\n`%s`\n\n`%s`\n\n' "$IMAGE_REFERENCE" "$digest"
-            printf 'CPU import/schema/template checks passed. GPU inference and deployment validation remain separate gates.\n'
+            printf 'CPU import/schema/template and actual standard-service port checks passed. GPU inference and deployment validation remain separate gates.\n'
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Remove runner registry credentials

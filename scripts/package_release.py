@@ -12,7 +12,7 @@ import tempfile
 import zipfile
 
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 ROOT_FILES = {
     "Dockerfile", "README.md", "LICENSE", "THIRD_PARTY_NOTICES.txt",
     ".dockerignore", ".gitignore", "handler.py", "pyproject.toml",

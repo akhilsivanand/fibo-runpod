@@ -27,7 +27,7 @@
     "community_catalog_note": "Current API returns at most 100 templates; this template was not in that slice. Public visibility was verified through direct template metadata."
   },
   "validation": {
-    "report": "validation.json",
+    "report": "validation-0.1.0.json",
     "browser_edit_completed": true,
     "fresh_queue_worker_edit_completed": true,
     "restart_preservation_verified": true,

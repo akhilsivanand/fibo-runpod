@@ -1,4 +1,4 @@
-"""Authenticated ComfyUI gateway with preparation and readiness pages."""
+"""ComfyUI gateway with preparation pages and optional authentication."""
 import asyncio
 import base64
 from dataclasses import dataclass
@@ -12,7 +12,7 @@ from pathlib import Path
 import re
 import secrets
 import time
-from urllib.parse import urlsplit, quote
+from urllib.parse import urlsplit, quote, parse_qs
 
 import aiohttp
 from aiohttp import web
@@ -46,7 +46,7 @@ def validate_secret(secret, name):
 
 
 def auth_from_environment(mode='pod'):
-    """Prefer an explicit legacy password; otherwise use Runpod's Connect token."""
+    """Protect ComfyUI on 8188 without taking over Jupyter's port 8888."""
     if mode == 'serverless':
         return GatewayAuth('none', '', 8188)
     password = os.environ.get('FIBO_PASSWORD', '')
@@ -54,8 +54,8 @@ def auth_from_environment(mode='pod'):
         return GatewayAuth('basic', validate_secret(password, 'FIBO_PASSWORD'), 8188)
     token = os.environ.get('JUPYTER_PASSWORD', '')
     if token:
-        return GatewayAuth('token', validate_secret(token, 'JUPYTER_PASSWORD'), 8888)
-    raise ValueError('Runpod Connect authentication is missing. Deploy with startJupyter enabled so Runpod supplies JUPYTER_PASSWORD, or set a unique FIBO_PASSWORD of at least 12 characters for port 8188.')
+        return GatewayAuth('token', validate_secret(token, 'JUPYTER_PASSWORD'), 8188)
+    raise ValueError('ComfyUI authentication is missing. Enable Jupyter so Runpod supplies a JUPYTER_PASSWORD token, or set a unique FIBO_PASSWORD of at least 12 characters for port 8188.')
 
 
 def session_cookie(secret, now=None):
@@ -133,7 +133,7 @@ def public_origin_from_environment(port=8188):
 
 def origin_allowed(origin, request_host, public_origin):
     if origin is None:
-        return True  # Authenticated API clients need not send a browser Origin.
+        return True  # Non-browser API clients need not send a browser Origin.
     normalized = normalize_origin(origin)
     if normalized is None:
         return False
@@ -223,13 +223,22 @@ def create_app(state, root, password=None, mode='pod', upstream='http://127.0.0.
 
     app.cleanup_ctx.append(session_context)
 
-    def unauthorized():
+    def unauthorized(request):
         headers = {'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer'}
         if auth.mechanism == 'basic':
             headers['WWW-Authenticate'] = 'Basic realm="Fibo Edit 2 Studio", charset="UTF-8"'
             detail = 'Sign in with username fibo and your FIBO_PASSWORD.'
         else:
-            detail = 'Open Fibo Edit 2 Studio using Runpod Connect.'
+            detail = 'Sign in using the configured gateway token.'
+            if request.method == 'GET':
+                headers['Content-Security-Policy'] = "default-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"
+                return web.Response(status=401, content_type='text/html', headers=headers, text='''<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign in to Fibo ComfyUI</title><h1>Fibo ComfyUI</h1>
+<p>Enter your Pod's Jupyter token to open ComfyUI.</p>
+<form method="post" action="/fibo/login"><label for="fibo-token">Jupyter token</label>
+<input id="fibo-token" name="token" type="password" required maxlength="4096" autocomplete="current-password">
+<button type="submit">Open ComfyUI</button></form></html>''')
         return web.Response(status=401, text=detail, headers=headers)
 
     def with_session(response):
@@ -249,16 +258,44 @@ def create_app(state, root, password=None, mode='pod', upstream='http://127.0.0.
         if mode != 'pod':
             raise web.HTTPNotFound()
         native_token = auth.mechanism == 'token'
+        if native_token and request.path == '/fibo/login':
+            if request.method != 'POST':
+                raise web.HTTPMethodNotAllowed(request.method, ['POST'])
+            if not origin_allowed(request.headers.get('Origin'), request.host, public_origin):
+                raise web.HTTPForbidden(text='Cross-origin requests are not allowed.')
+            if request.content_length is not None and request.content_length > 8192:
+                raise web.HTTPRequestEntityTooLarge(max_size=8192, actual_size=request.content_length)
+            if request.content_type != 'application/x-www-form-urlencoded':
+                raise web.HTTPUnsupportedMediaType()
+            body = bytearray()
+            while True:
+                chunk = await request.content.read(8193 - len(body))
+                if not chunk:
+                    break
+                body.extend(chunk)
+                if len(body) > 8192:
+                    raise web.HTTPRequestEntityTooLarge(max_size=8192, actual_size=len(body))
+            try:
+                fields = parse_qs(body.decode('utf-8'), keep_blank_values=True,
+                                  strict_parsing=True, max_num_fields=2)
+                valid = (set(fields) == {'token'} and len(fields['token']) == 1
+                         and hmac.compare_digest(fields['token'][0].encode('utf-8'), auth.secret.encode('utf-8')))
+            except (ValueError, UnicodeError):
+                valid = False
+            if not valid:
+                return unauthorized(request)
+            return with_session(web.Response(status=303, headers={
+                'Location': '/', 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer'}))
         token_present = 'token' in request.query
         token_valid = (native_token and request.method == 'GET'
                        and len(request.query.getall('token', [])) == 1
                        and hmac.compare_digest(request.query['token'].encode('utf-8'), auth.secret.encode('utf-8')))
         if token_present and not token_valid:
-            return unauthorized()
+            return unauthorized(request)
         authenticated = (token_valid or session_authorized(request.cookies.get(SESSION_COOKIE), auth.secret)
                          if native_token else authorized(request.headers.get('Authorization', ''), auth.secret))
         if not authenticated:
-            return unauthorized()
+            return unauthorized(request)
         origin = request.headers.get('Origin')
         if not origin_allowed(origin, request.host, public_origin):
             raise web.HTTPForbidden(text='Cross-origin requests are not allowed.')
@@ -323,7 +360,7 @@ def create_app(state, root, password=None, mode='pod', upstream='http://127.0.0.
                 await server.close()
                 await browser.close()
             return browser
-        # Browser origin checks belong at this authenticated public boundary.
+        # Browser origin checks belong at this public boundary.
         # ComfyUI's loopback origin guard would reject the public browser origin
         # after the proxy replaces Host with its private upstream address.
         headers = {k: v for k, v in request.headers.items()

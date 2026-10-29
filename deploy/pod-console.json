@@ -7,8 +7,16 @@
   ],
   "portsConfig": [
     {
-      "name": "Fibo 2 ComfyUI",
+      "name": "ComfyUI",
+      "port": 8188
+    },
+    {
+      "name": "JupyterLab",
       "port": 8888
+    },
+    {
+      "name": "FileBrowser",
+      "port": 8080
     }
   ]
 }

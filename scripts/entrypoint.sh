@@ -16,9 +16,9 @@ PY
     # The hook acknowledges initialization; it does not background the app.
     FIBO_START_SIGNAL="$(mktemp /tmp/fibo-base-ready.XXXXXX)"
     export FIBO_START_SIGNAL
-    # Keep the provider's token in this parent for the FIBO gateway, while
-    # preventing the base image from starting a second service on port 8888.
-    env -u JUPYTER_PASSWORD -u JUPYTER_DISABLE_AUTH -u FIBO_PASSWORD /start.sh &
+    # Runpod owns JupyterLab on 8888. Pass its generated token through while
+    # keeping the optional ComfyUI password out of the base service process.
+    env -u JUPYTER_DISABLE_AUTH -u FIBO_PASSWORD -u FILEBROWSER_PASSWORD /start.sh &
     base_pid=$!
     for attempt in {1..120}; do
       [[ -s "$FIBO_START_SIGNAL" ]] && break

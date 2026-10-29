@@ -10,6 +10,12 @@
 
 The source package contains no commercial-use grant for Fibo weights. Runpod submission metadata must preserve the noncommercial limitation and Bria licensing link. The previous MOSS listing encountered a provider-side source-download HTTP 401; diagnose any new build using its own result rather than assuming that issue is resolved.
 
-The base image is pinned by digest, with Python 3.11, PyTorch 2.13/CUDA 13 and Runpod SSH initialization. The upgraded ComfyUI source and the eight changed dependencies are pinned too. Rebuilding a new image or changing native dependencies requires fresh inference checks; MOSS's historical GPU results are not Fibo evidence.
+The 0.2.0 base is the immutable GPU-tested Fibo 0.1.0 image, preserving its Python 3.11, PyTorch 2.13/CUDA 13, ComfyUI and inference dependencies. Its lineage retains the original MOSS dependency base and Runpod initialization. Rebuilding a new image or changing native dependencies requires fresh inference checks; MOSS's historical GPU results are not Fibo evidence.
 
 Validated runtime: `d70fdcc55c1354e8b10cb2e97f926acdf31a23c4`, image `ghcr.io/akhilsivanand/fibo-comfyui@sha256:7487d8ab9784c0f8b4176b21332e0a3f6c762053b597379d3a94e44dfcae46d2`. The dated [GPU validation report](validation.json) records completed browser and queue edits, authentication, native workflow import/export and restart retention. The release packaging revision adds publication documentation and evidence without changing the tested runtime. Image promotion, the public Pod template, and Hub build/test/review outcomes are recorded separately after publication.
+
+## Standard service ports in 0.2.0
+
+Use ComfyUI on 8188, JupyterLab on 8888, FileBrowser on 8080 and SSH on 22. Jupyter uses the native token; it is an actual Jupyter service rather than a replacement ComfyUI gateway. ComfyUI retains token protection on 8188 through its token login page, with FIBO_PASSWORD Basic authentication available as an alternative. The internal model backend remains private on 8189. The host/container port declarations, Connect labels and actual listeners must agree.
+
+The historical 0.1.0 GPU report is now `validation-0.1.0.json`. A CPU service test establishes port routing and service startup only. Do not describe it as a fresh GPU inference or restart-preservation test. No new GPU resource is required to correct and test these service ports; the stopped personal Pod is deleted at the user's request after publication of the corrected configuration.

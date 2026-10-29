@@ -27,6 +27,7 @@ REQUIRED = (
     "config/workflows.json", "requirements/runtime.lock", "requirements/upgrade.lock",
     "src/fibo_runtime/bootstrap.py", "src/fibo_runtime/jobs.py",
     "custom_nodes/fibo/__init__.py", "scripts/entrypoint.sh",
+    "src/fibo_runtime/filebrowser.py", "scripts/install_filebrowser.sh", "scripts/check_service_ports.py",
 )
 HEX40 = re.compile(r"[0-9a-f]{40}")
 HEX64 = re.compile(r"[0-9a-f]{64}")
@@ -182,7 +183,7 @@ def check_deployment(root):
     pod = read_json(root / "deploy/pod-template.json")
     require(pod.get("category") == "NVIDIA" and pod.get("isServerless") is False, "Pod template must select NVIDIA Pod mode")
     require(pod.get("containerDiskInGb") == 60 and pod.get("volumeInGb") == 60 and pod.get("volumeMountPath") == "/workspace", "Pod needs 60 GB first-use disk and the optional workspace volume setting")
-    require(set(pod.get("ports", [])) == {"8888/http", "22/tcp"}, "Pod must expose native Connect on 8888 and SSH")
+    require(set(pod.get("ports", [])) == {"8188/http", "8080/http", "8888/http", "22/tcp"}, "Pod must expose standard ComfyUI, FileBrowser, JupyterLab and SSH ports")
     require(pod.get("env") == {"FIBO_MODE": "pod"}, "Pod launch must not require a manual password, token or volume-size variable")
     require(pod.get("dockerEntrypoint") == [] and pod.get("dockerStartCmd") == ["/opt/fibo/scripts/entrypoint.sh"], "Pod must explicitly select the baked startup script and retain the image entry point")
     require(isinstance(pod.get("imageName"), str) and pod["imageName"], "Pod image identity is missing")
@@ -191,8 +192,9 @@ def check_deployment(root):
     require(console.get("startJupyter") is True and console.get("startSsh") is True,
             "Native Connect token and Runpod SSH must be enabled")
     require(console.get("allowedCudaVersions") == ["13.0", "13.2"], "Pod host must support CUDA 13.0")
-    require(console.get("portsConfig") == [{"name": "Fibo 2 ComfyUI", "port": 8888}],
-            "Native Connect must label port 8888 as Fibo 2 ComfyUI")
+    require(console.get("portsConfig") == [{"name": "ComfyUI", "port": 8188},
+            {"name": "JupyterLab", "port": 8888}, {"name": "FileBrowser", "port": 8080}],
+            "Connect labels must match the standard service ports")
     return pod
 
 
