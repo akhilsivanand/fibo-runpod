@@ -1,0 +1,217 @@
+name: Promote validated release image
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: fibo-image-promotion-0.1.0
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    if: github.repository == 'akhilsivanand/fibo-runpod'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      IMAGE_REPOSITORY: ghcr.io/akhilsivanand/fibo-comfyui
+      RELEASE_VERSION: 0.1.0
+      TESTED_SOURCE_REVISION: d70fdcc55c1354e8b10cb2e97f926acdf31a23c4
+    steps:
+      - name: Check out release source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require matching publication evidence and unchanged runtime
+        id: release
+        shell: bash
+        run: |
+          python3 scripts/check_release.py --publish
+          python3 <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          import tomllib
+
+          pod = json.loads(Path('deploy/pod-template.json').read_text())
+          report = json.loads(Path('docs/validation.json').read_text())
+          version = tomllib.loads(Path('pyproject.toml').read_text())['project']['version']
+          expected_version = os.environ['RELEASE_VERSION']
+          repository = os.environ['IMAGE_REPOSITORY']
+          digest = report['image_digest']
+          revision = report['source_revision']
+          if version != expected_version or not re.fullmatch(r'sha256:[0-9a-f]{64}', digest):
+              raise SystemExit('Release version or image digest is invalid')
+          if (not re.fullmatch(r'[0-9a-f]{40}', revision)
+                  or revision != os.environ['TESTED_SOURCE_REVISION']):
+              raise SystemExit('The report must identify the exact tested Fibo 0.1.0 runtime revision')
+          source = repository + '@' + digest
+          if pod['imageName'] != source:
+              raise SystemExit('Canonical Pod image must match the tested immutable image')
+          # README and publication metadata may change after testing. Every
+          # behavioral/baked input must still match the tested runtime commit.
+          inputs = [
+              'Dockerfile', '.dockerignore', 'handler.py', 'pyproject.toml',
+              'requirements/runtime.lock', 'requirements/upgrade.lock',
+              'requirements/runtime.in', 'requirements/upgrade.in',
+              'requirements/constraints.txt', 'src/', 'config/', 'workflows/',
+              'custom_nodes/', 'LICENSE', 'THIRD_PARTY_NOTICES.txt',
+              'scripts/entrypoint.sh', 'scripts/base-ready.sh',
+              'scripts/healthcheck.py', 'scripts/check_native_dependencies.py',
+              'scripts/smoke_container.py', 'scripts/validate_gpu.py',
+          ]
+          subprocess.run(['git', 'cat-file', '-e', revision + '^{commit}'], check=True)
+          subprocess.run(['git', 'diff', '--quiet', revision, 'HEAD', '--', *inputs], check=True)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f'source={source}\ndigest={digest}\nrevision={revision}\n')
+              output.write(f'stable={repository}:{expected_version}\n')
+          PY
+
+      - name: Verify anonymous source and protect the release tag
+        id: registry
+        env:
+          EXPECTED_DIGEST: ${{ steps.release.outputs.digest }}
+          EXPECTED_REVISION: ${{ steps.release.outputs.revision }}
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/fibo-check-promotion.py" <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import sys
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          repository = os.environ['IMAGE_REPOSITORY'].removeprefix('ghcr.io/')
+          expected = os.environ['EXPECTED_DIGEST']
+          revision = os.environ['EXPECTED_REVISION']
+          phase = sys.argv[1]
+          media = ('application/vnd.oci.image.manifest.v1+json',
+                   'application/vnd.docker.distribution.manifest.v2+json')
+
+          def read(url, headers=None):
+              with urllib.request.urlopen(urllib.request.Request(url, headers=headers or {}), timeout=60) as response:
+                  return response.read(), response.headers
+
+          # No GitHub/Docker credentials are used for these registry checks.
+          query = urllib.parse.urlencode({'service': 'ghcr.io', 'scope': f'repository:{repository}:pull'})
+          token = json.loads(read('https://ghcr.io/token?' + query)[0])['token']
+          headers = {'Authorization': 'Bearer ' + token, 'Accept': ', '.join(media)}
+
+          def manifest(reference):
+              body, response_headers = read(f'https://ghcr.io/v2/{repository}/manifests/{reference}', headers)
+              digest = 'sha256:' + hashlib.sha256(body).hexdigest()
+              if response_headers.get('Docker-Content-Digest', digest) != digest:
+                  raise SystemExit('Registry manifest header does not match its actual bytes')
+              value = json.loads(body)
+              if value.get('schemaVersion') != 2 or value.get('mediaType') not in media or 'layers' not in value:
+                  raise SystemExit('Promotion requires the tested single-image manifest format')
+              return digest, value
+
+          source_digest, source = manifest(expected)
+          if source_digest != expected:
+              raise SystemExit('Anonymous source manifest differs from the validated digest')
+          config_digest = source['config']['digest']
+          config_body = read(f'https://ghcr.io/v2/{repository}/blobs/{config_digest}', headers)[0]
+          if 'sha256:' + hashlib.sha256(config_body).hexdigest() != config_digest:
+              raise SystemExit('Registry image configuration integrity check failed')
+          config = json.loads(config_body)
+          labels = config['config'].get('Labels', {})
+          if config.get('architecture') != 'amd64' or config.get('os') != 'linux':
+              raise SystemExit('Expected the validated Linux AMD64 image')
+          if labels.get('org.opencontainers.image.revision') != revision:
+              raise SystemExit('Image source label differs from the validated runtime revision')
+          if labels.get('org.opencontainers.image.source') != 'https://github.com/akhilsivanand/fibo-runpod':
+              raise SystemExit('Image source repository differs from the Fibo release repository')
+          try:
+              stable_digest, _ = manifest(os.environ['RELEASE_VERSION'])
+          except urllib.error.HTTPError as error:
+              if phase != 'before' or error.code != 404:
+                  raise
+              stable_digest = None
+          if stable_digest is not None and stable_digest != expected:
+              raise SystemExit('Refusing to overwrite an existing release tag with a different digest')
+          if phase == 'after' and stable_digest != expected:
+              raise SystemExit('Anonymous release tag verification failed')
+          result = {'source_revision': revision, 'image_digest': expected,
+                    'stable_digest': stable_digest, 'anonymous_verification': True,
+                    'compressed_layer_bytes': sum(layer['size'] for layer in source['layers'])}
+          Path(os.environ['RUNNER_TEMP'], 'fibo-promotion-' + phase + '.json').write_text(json.dumps(result, indent=2))
+          if phase == 'before':
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+                  output.write('already_published=' + str(stable_digest == expected).lower() + '\n')
+          print(json.dumps(result))
+          PY
+          python3 "$RUNNER_TEMP/fibo-check-promotion.py" before
+
+      - name: Sign in using this repository's Actions token
+        if: steps.registry.outputs.already_published != 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          export DOCKER_CONFIG=$(mktemp -d "$RUNNER_TEMP/fibo-promote-docker.XXXXXX")
+          export BUILDX_CONFIG=$(mktemp -d "$RUNNER_TEMP/fibo-promote-buildx.XXXXXX")
+          chmod 0700 "$DOCKER_CONFIG" "$BUILDX_CONFIG"
+          printf 'DOCKER_CONFIG=%s\nBUILDX_CONFIG=%s\n' "$DOCKER_CONFIG" "$BUILDX_CONFIG" >> "$GITHUB_ENV"
+          printf '%s' "$GITHUB_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+
+      - name: Promote the exact tested manifest without rebuilding
+        if: steps.registry.outputs.already_published != 'true'
+        env:
+          SOURCE_IMAGE: ${{ steps.release.outputs.source }}
+          STABLE_IMAGE: ${{ steps.release.outputs.stable }}
+        shell: bash
+        run: |
+          # One source and --prefer-index=false preserve its manifest format.
+          docker buildx imagetools create --prefer-index=false --tag "$STABLE_IMAGE" "$SOURCE_IMAGE"
+
+      - name: Verify anonymous stable-tag digest identity
+        env:
+          EXPECTED_DIGEST: ${{ steps.release.outputs.digest }}
+          EXPECTED_REVISION: ${{ steps.release.outputs.revision }}
+        shell: bash
+        run: python3 "$RUNNER_TEMP/fibo-check-promotion.py" after
+
+      - name: Summarize the verified publication
+        env:
+          SOURCE_IMAGE: ${{ steps.release.outputs.source }}
+          STABLE_IMAGE: ${{ steps.release.outputs.stable }}
+          TESTED_REVISION: ${{ steps.release.outputs.revision }}
+        shell: bash
+        run: |
+          python3 <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          result = json.loads(Path(os.environ['RUNNER_TEMP'], 'fibo-promotion-after.json').read_text())
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('### Verified Fibo image promotion\n\n')
+              summary.write(f"Stable tag: `{os.environ['STABLE_IMAGE']}`\n\n")
+              summary.write(f"Exact image: `{os.environ['SOURCE_IMAGE']}`\n\n")
+              summary.write(f"Tested runtime: `{os.environ['TESTED_REVISION']}`\n\n")
+              summary.write(f"Release source: `{os.environ['GITHUB_SHA']}`\n\n")
+              summary.write(f"Anonymous manifest verification passed; {result['compressed_layer_bytes']:,} compressed layer bytes.\n\n")
+              summary.write('The tested manifest was retained. This workflow performs no rebuild, GPU generation, Pod action or Hub approval.\n')
+          PY
+
+      - name: Remove isolated registry credentials
+        if: always()
+        shell: bash
+        run: |
+          if [[ -n "${DOCKER_CONFIG:-}" && "$DOCKER_CONFIG" == "$RUNNER_TEMP"/fibo-promote-docker.* ]]; then
+            docker logout ghcr.io >/dev/null 2>&1 || true
+            rm -rf -- "$DOCKER_CONFIG"
+          fi
+          if [[ -n "${BUILDX_CONFIG:-}" && "$BUILDX_CONFIG" == "$RUNNER_TEMP"/fibo-promote-buildx.* ]]; then
+            rm -rf -- "$BUILDX_CONFIG"
+          fi
